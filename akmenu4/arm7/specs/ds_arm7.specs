@@ -1,0 +1,8 @@
+%rename link                old_link
+
+*link:
+%(old_link) -T ../../specs/ds_arm7.ld%s
+
+*startfile:
+crt/ds_arm7_crt1%O%s crti%O%s crtbegin%O%s
+
