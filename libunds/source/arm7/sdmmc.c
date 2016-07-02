@@ -417,8 +417,15 @@ void sdmmcMsgHandler(int bytes, void *user_data) {
 //---------------------------------------------------------------------------------
     FifoMessage msg;
     int retval = 0;
-
-    fifoGetDatamsg(FIFO_SDMMC, bytes, (u8*)&msg);
+	
+	fifoWaitValue32(FIFO_SDMMC);
+	msg.type = fifoGetValue32(FIFO_SDMMC);
+	fifoWaitValue32(FIFO_SDMMC);
+	msg.sdParams.startsector = fifoGetValue32(FIFO_SDMMC);
+	fifoWaitValue32(FIFO_SDMMC);
+	msg.sdParams.numsectors = fifoGetValue32(FIFO_SDMMC);
+	fifoWaitValue32(FIFO_SDMMC);
+	msg.sdParams.buffer = (void*) fifoGetValue32(FIFO_SDMMC);
 
     int oldIME = enterCriticalSection();
     switch (msg.type) {
@@ -442,6 +449,8 @@ void sdmmcMsgHandler(int bytes, void *user_data) {
     fifoSendValue32(FIFO_SDMMC, retval);
 }
 
+static bool msgMode = false;
+
 //---------------------------------------------------------------------------------
 void sdmmcValueHandler(u32 value, void* user_data) {
 //---------------------------------------------------------------------------------
@@ -449,29 +458,40 @@ void sdmmcValueHandler(u32 value, void* user_data) {
 
     int oldIME = enterCriticalSection();
 
-    switch(value) {
 
-    case SDMMC_HAVE_SD:
-        result = sdmmc_read16(REG_SDSTATUS0);
-        break;
+	if(!msgMode) {
+		switch(value) {
 
-    case SDMMC_SD_START:
-        if (sdmmc_read16(REG_SDSTATUS0) == 0) {
-            result = 1;
-        } else {
-            sdmmc_controller_init();
-            sdmmc_nand_init();
-            result = sdmmc_sdcard_init();
-        }
-        break;
+		case SDMMC_HAVE_SD:
+			result = sdmmc_read16(REG_SDSTATUS0);
+			break;
 
-    case SDMMC_SD_IS_INSERTED:
-        result = sdmmc_cardinserted();
-        break;
+		case SDMMC_SD_START:
+			if (sdmmc_read16(REG_SDSTATUS0) == 0) {
+				result = 1;
+			} else {
+				sdmmc_controller_init();
+				sdmmc_nand_init();
+				result = sdmmc_sdcard_init();
+			}
+			break;
 
-    case SDMMC_SD_STOP:
-        break;
-    }
+		case SDMMC_SD_IS_INSERTED:
+			result = sdmmc_cardinserted();
+			break;
+
+		case SDMMC_SD_STOP:
+			break;		
+			
+		case SDMMC_MSG:
+			msgMode = true;
+			fifoSendValue32(FIFO_SDMMC, SDMMC_MSG);
+			sdmmcMsgHandler(0,0);
+			msgMode = false;
+			break;		
+		}
+	}
+	
 
     leaveCriticalSection(oldIME);
 

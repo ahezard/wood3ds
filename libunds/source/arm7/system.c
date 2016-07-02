@@ -29,6 +29,7 @@
 #include <nds/interrupts.h>
 #include <nds/bios.h>
 #include <nds/arm7/clock.h>
+#include <nds/arm7/sdmmc.h>
 
 //---------------------------------------------------------------------------------
 void powerValueHandler(u32 value, void* user_data) {
@@ -91,10 +92,13 @@ void powerValueHandler(u32 value, void* user_data) {
 	}
 }
 
+void sdmmcValueHandler(u32 value, void* user_data);
+
 //---------------------------------------------------------------------------------
 void installSystemFIFO(void) {
 //---------------------------------------------------------------------------------
 	fifoSetValue32Handler(FIFO_PM, powerValueHandler, 0);
+	fifoSetValue32Handler(FIFO_SDMMC, sdmmcValueHandler, 0);
 }
 
 

@@ -27,13 +27,21 @@ bool nand_ReadSectors(sec_t sector, sec_t numSectors,void* buffer) {
 	FifoMessage msg;
 
 	DC_FlushRange(buffer,numSectors * 512);
+	
+	// switch to MSG mode
+	fifoSendValue32(FIFO_SDMMC, SDMMC_MSG);	
+	fifoWaitValue32(FIFO_SDMMC);
+	fifoGetValue32(FIFO_SDMMC);
 
 	msg.type = SDMMC_NAND_READ_SECTORS;
 	msg.sdParams.startsector = sector;
 	msg.sdParams.numsectors = numSectors;
 	msg.sdParams.buffer = buffer;
-
-	fifoSendDatamsg(FIFO_SDMMC, sizeof(msg), (u8*)&msg);
+	
+	fifoSendValue32(FIFO_SDMMC, msg.type);
+	fifoSendValue32(FIFO_SDMMC, msg.sdParams.startsector);
+	fifoSendValue32(FIFO_SDMMC, msg.sdParams.numsectors);
+	fifoSendValue32(FIFO_SDMMC, msg.sdParams.buffer);
 
 	fifoWaitValue32(FIFO_SDMMC);
 
@@ -49,13 +57,21 @@ bool nand_WriteSectors(sec_t sector, sec_t numSectors,const void* buffer) {
 	FifoMessage msg;
 
 	DC_FlushRange(buffer,numSectors * 512);
+	
+	// switch to MSG mode
+	fifoSendValue32(FIFO_SDMMC, SDMMC_MSG);	
+	fifoWaitValue32(FIFO_SDMMC);
+	fifoGetValue32(FIFO_SDMMC);
 
 	msg.type = SDMMC_NAND_WRITE_SECTORS;
 	msg.sdParams.startsector = sector;
 	msg.sdParams.numsectors = numSectors;
 	msg.sdParams.buffer = (void*)buffer;
 
-	fifoSendDatamsg(FIFO_SDMMC, sizeof(msg), (u8*)&msg);
+	fifoSendValue32(FIFO_SDMMC, msg.type);
+	fifoSendValue32(FIFO_SDMMC, msg.sdParams.startsector);
+	fifoSendValue32(FIFO_SDMMC, msg.sdParams.numsectors);
+	fifoSendValue32(FIFO_SDMMC, msg.sdParams.buffer);
 
 	fifoWaitValue32(FIFO_SDMMC);
 
