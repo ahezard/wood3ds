@@ -2,6 +2,7 @@
 #define FIFOCOMMON_H
 
 #include "ndstypes.h"
+#include "interrupts.h"
 
 /*! \file fifocommon.h
 	\brief low level FIFO API.
@@ -128,6 +129,22 @@ bool fifoCheckValue32(int channel);
 	\return the first value32 in queue, or 0 if there is no message.
 */
 u32 fifoGetValue32(int channel);
+
+/*!
+	\brief waits for any data messages in the fifo queue.
+
+	\param channel the channel to check.
+
+*/
+//---------------------------------------------------------------------------------
+static inline void fifoWaitValue32(int channel) {
+//---------------------------------------------------------------------------------
+
+	while(!fifoCheckValue32(channel)) {
+		swiIntrWait(1,IRQ_FIFO_NOT_EMPTY);
+	}
+
+}
 
 // Some aspects of this configuration can be changed...
 
