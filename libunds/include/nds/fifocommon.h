@@ -12,19 +12,19 @@ typedef enum {
    FIFO_PM		= 0,	/*!< \brief fifo channel reserved for power management. */
    FIFO_INPUT 	= 1,	/*!< \brief fifo channel reserved for input functions. */
    FIFO_CLOCK 	= 2,	/*!< \brief fifo channel reserved for clock functions. */
-   FIFO_USER_01	= 3,	/*!< \brief fifo channel available for users. */
-   FIFO_USER_02	= 4,	/*!< \brief fifo channel available for users. */
-   FIFO_USER_03	= 5,	/*!< \brief fifo channel available for users. */
-   FIFO_USER_04	= 6,	/*!< \brief fifo channel available for users. */
-   FIFO_USER_05	= 7,	/*!< \brief fifo channel available for users. */
-   FIFO_USER_06	= 8,	/*!< \brief fifo channel available for users. */
-   FIFO_USER_07	= 9,	/*!< \brief fifo channel available for users. */
-   FIFO_USER_08	= 10,	/*!< \brief fifo channel available for users. */
-   FIFO_USER_09	= 11,	/*!< \brief fifo channel available for users. */
-   FIFO_USER_10	= 12,	/*!< \brief fifo channel available for users. */
-   FIFO_USER_11	= 13,	/*!< \brief fifo channel available for users. */
-   FIFO_USER_12	= 14,	/*!< \brief fifo channel available for users. */
-   FIFO_USER_13	= 15 	/*!< \brief fifo channel available for users. */
+   FIFO_SDMMC   = 3,	/*!< \brief fifo channel reserved for sd/nand functions. */
+   FIFO_USER_01	= 4,	/*!< \brief fifo channel available for users. */
+   FIFO_USER_02	= 5,	/*!< \brief fifo channel available for users. */
+   FIFO_USER_03	= 6,	/*!< \brief fifo channel available for users. */
+   FIFO_USER_04	= 7,	/*!< \brief fifo channel available for users. */
+   FIFO_USER_05	= 8,	/*!< \brief fifo channel available for users. */
+   FIFO_USER_06	= 9,	/*!< \brief fifo channel available for users. */
+   FIFO_USER_07	= 10,	/*!< \brief fifo channel available for users. */
+   FIFO_USER_08	= 11,	/*!< \brief fifo channel available for users. */
+   FIFO_USER_09	= 12,	/*!< \brief fifo channel available for users. */
+   FIFO_USER_10	= 13,	/*!< \brief fifo channel available for users. */
+   FIFO_USER_11	= 14,	/*!< \brief fifo channel available for users. */
+   FIFO_USER_12	= 15 	/*!< \brief fifo channel available for users. */
 } FifoChannels;
 
 //! Enum values for the fifo power management commands.
@@ -34,6 +34,15 @@ typedef enum {
 	PM_REQ_LED  = (3<<16),
 	PM_REQ_SLEEP  = (4<<16)
 }FifoPMCommands;
+
+typedef enum {
+	SDMMC_HAVE_SD,
+	SDMMC_SD_START,
+	SDMMC_SD_IS_INSERTED,
+	SDMMC_SD_STOP,
+	SDMMC_NAND_START,
+	SDMMC_NAND_STOP
+} FifoSdmmcCommands;
 
 //! Power Management LED blink mode control bits.
 typedef enum {
