@@ -44,11 +44,7 @@ LDFLAGS	=	-specs=ds_arm9.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map)
 
 LIBS	:=
 
-ifeq ($(BUILD),dldi)
 LIBDIRS	:=	$(LIBUNDS)
-else
-LIBDIRS	:=
-endif
 
 #---------------------------------------------------------------------------------
 # no real need to edit anything past this point unless you need to add additional

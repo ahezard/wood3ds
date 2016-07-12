@@ -1,6 +1,7 @@
 #include <nds/system.h>
 #include <nds/bios.h>
 #include <nds/arm7/sdmmc.h>
+#include <nds/debug.h>
 #include <nds/interrupts.h>
 #include <nds/fifocommon.h>
 #include <nds/fifomessages.h>
@@ -454,6 +455,7 @@ static bool msgMode = false;
 //---------------------------------------------------------------------------------
 void sdmmcValueHandler(u32 value, void* user_data) {
 //---------------------------------------------------------------------------------
+    nocashMessage("sdmmc.c sdmmcValueHandler");
     int result = 0;
 
     int oldIME = enterCriticalSection();

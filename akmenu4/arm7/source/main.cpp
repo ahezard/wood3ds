@@ -152,6 +152,7 @@ static void menuValue32Handler(u32 value,void* data)
 
 int main()
 {
+  nocashMessage("ARM7 main.cpp main");
   //mute sound
   if(2==getSystem()) writePowerManagement(PM_CONTROL_REG,(readPowerManagement(PM_CONTROL_REG)&~PM_SOUND_AMP)|PM_SOUND_MUTE);
   //switch on backlight on both screens

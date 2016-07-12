@@ -85,3 +85,6 @@ akmenu4/arm9/data/r4/akloader_arm7.bin
 akmenu4/arm9/data/r4/akloader_arm9.bin
 akmenu4/arm9/data/rpg/akloader_arm7.bin
 akmenu4/arm9/data/rpg/akloader_arm9.bin
+*.cia
+*.nds
+*.txt

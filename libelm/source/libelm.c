@@ -30,6 +30,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <sys/fcntl.h>
 #include <sys/unistd.h>
 
+#include <nds/debug.h>
+
 #include <ctype.h>
 #include <string.h>
 #include <wchar.h>
@@ -45,8 +47,9 @@ int elm_error;
 
 #define ELM_NAND 0
 #define ELM_SD   1
-static FATFS _elm[2];
-#define VALID_DISK(disk) (disk==ELM_NAND||disk==ELM_SD)
+#define ELM_DSISD   2
+static FATFS _elm[3];
+#define VALID_DISK(disk) (disk==ELM_NAND||disk==ELM_SD||ELM_DSISD)
 
 int _ELM_open_r(struct _reent *r, void *fileStruct, const char *path, int flags, int mode);
 int _ELM_close_r(struct _reent *r, int fd);
@@ -133,11 +136,40 @@ static const devoptab_t dotab_elm1=
   NULL
 };
 
+static const devoptab_t dotab_elm2=
+{
+  "fat2",
+  sizeof(FIL),
+  _ELM_open_r,      /* fopen  */
+  _ELM_close_r,     /* fclose */
+  _ELM_write_r,     /* fwrite */
+  _ELM_read_r,      /* fread  */
+  _ELM_seek_r,      /* fseek  */
+  _ELM_fstat_r,     /* fstat  */
+  _ELM_stat_r,      /* stat   */
+  _ELM_link_r,      /* link   */
+  _ELM_unlink_r,    /* unlink */
+  _ELM_chdir_r,     /* chdir  */
+  _ELM_rename_r,    /* rename */
+  _ELM_mkdir_r,     /* mkdir  */
+  sizeof(DIR_EX),
+  _ELM_diropen_r,   /* diropen   */
+  _ELM_dirreset_r,  /* dirreset  */
+  _ELM_dirnext_r,   /* dirnext   */
+  _ELM_dirclose_r,  /* dirclose  */
+  _ELM_statvfs_r,   /* statvfs   */
+  _ELM_ftruncate_r, /* ftruncate */
+  _ELM_fsync_r,     /* fsync     */
+  NULL,             /* Device data */
+  NULL,
+  NULL
+};
+
 static TCHAR CvtBuf[_MAX_LFN+1];
 
 static const char* _ELM_realpath(const char* path)
 {
-  if(path&&tolower((unsigned char)path[0])=='f'&&tolower((unsigned char)path[1])=='a'&&tolower((unsigned char)path[2])=='t'&&(path[3]=='0'||path[3]=='1')&&path[4]==':')
+  if(path&&tolower((unsigned char)path[0])=='f'&&tolower((unsigned char)path[1])=='a'&&tolower((unsigned char)path[2])=='t'&&(path[3]=='0'||path[3]=='1'||path[3]=='2')&&path[4]==':')
   {
     return path+3;
   }
@@ -428,7 +460,7 @@ int _ELM_stat_r(struct _reent* r,const char* file,struct stat* st)
   size_t len=0;
   TCHAR* p=_ELM_mbstoucs2(_ELM_realpath(file),&len);
   if(p[len-1]==L'/') p[len-1]=L'\0';
-  if((p[0]==L'0'||p[0]==L'1')&&p[1]==L':'&&p[2]==L'\0')
+  if((p[0]==L'0'||p[0]==L'1'||p[0]==L'2')&&p[1]==L':'&&p[2]==L'\0')
   {
     _ELM_disk_to_stat(p[0]-L'0',st);
     return 0;
@@ -483,7 +515,7 @@ int _ELM_rename_r(struct _reent* r,const char* path,const char* pathp)
   const TCHAR* pp;
   memcpy(p,_ELM_mbstoucs2(_ELM_realpath(path),NULL),sizeof(p));
   pp=_ELM_mbstoucs2(_ELM_realpath(pathp),NULL);
-  if((pp[0]==L'0'||pp[0]==L'1')&&pp[1]==L':') pp+=2;
+  if((pp[0]==L'0'||pp[0]==L'1'||pp[0]==L'2')&&pp[1]==L':') pp+=2;
   elm_error=f_rename(p,pp);
   return _ELM_errnoparse(r,0,-1);
 #else
@@ -630,6 +662,7 @@ WCHAR ff_wtoupper(WCHAR chr)
 
 int ELM_Mount(void)
 {
+  nocashMessage("libelm.c ELM_Mount");
   int ret=0;
   if(f_mount(ELM_NAND,&(_elm[0]))!=FR_OK)
   {
@@ -639,7 +672,11 @@ int ELM_Mount(void)
   {
     ret|=2;
   }
-  if(ret==3)
+  if(f_mount(ELM_DSISD,&(_elm[2]))!=FR_OK)
+  {
+    ret|=4;
+  }
+  if(ret==7)
   {
     return ret;
   }
@@ -653,6 +690,11 @@ int ELM_Mount(void)
     _ELM_chk_mounted(1);
     AddDevice(&dotab_elm1);
   }
+  if(!(ret&4))
+  {
+    _ELM_chk_mounted(2);
+    AddDevice(&dotab_elm2);
+  }
   elm_error=0;
   return ret;
 }
@@ -661,8 +703,10 @@ void ELM_Unmount(void)
 {
   RemoveDevice("fat0:");
   RemoveDevice("fat1:");
+  RemoveDevice("fat2:");
   f_mount(ELM_NAND,NULL);
   f_mount(ELM_SD,NULL);
+  f_mount(ELM_DSISD,NULL);
 }
 
 int ELM_ClusterSizeFromDisk(int disk,uint32_t* size)

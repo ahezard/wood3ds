@@ -159,10 +159,10 @@ bool cMainList::enterDir( const std::string & dirName )
                 a_row.push_back( SD_ROOT );
                 rominfo.setBanner("usd",microsd_banner_bin);
             } else if( _topSlot2 == i ) {
-                a_row.push_back( LANG("mainlist","slot2 card") );
+                a_row.push_back( LANG("mainlist","3ds sd card") );
                 a_row.push_back( "" );
-                a_row.push_back( "slot2:/" );
-                rominfo.setBanner("slot2",gba_banner_bin);
+                a_row.push_back( "fat2:/" );
+                rominfo.setBanner("slot2",nand_banner_bin);
             } else if( _topFavorites == i ) {
                 a_row.push_back( LANG("mainlist","favorites") );
                 a_row.push_back( "" );

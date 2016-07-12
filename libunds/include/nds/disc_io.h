@@ -60,4 +60,6 @@ struct DISC_INTERFACE_STRUCT {
 
 typedef struct DISC_INTERFACE_STRUCT DISC_INTERFACE ;
 
+extern const DISC_INTERFACE __io_dsisd;
+
 #endif	// define NDS_DISC_IO_INCLUDE

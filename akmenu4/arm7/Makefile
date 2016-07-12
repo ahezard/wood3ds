@@ -31,7 +31,7 @@ CFLAGS	:=	-g -Wall -Os\
 		-ffast-math \
 		$(ARCH)
 
-CFLAGS	+=	$(INCLUDE) -DARM7 -fno-dwarf2-cfi-asm
+CFLAGS	+=	$(INCLUDE) -DARM7 -fno-dwarf2-cfi-asm -DDEBUG
 CXXFLAGS	:=	$(CFLAGS) -fno-rtti -fno-exceptions -fno-rtti
 
 

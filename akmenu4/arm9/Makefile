@@ -33,7 +33,7 @@ CFLAGS	:=	-g -Wall -Os\
 			-ffast-math \
 			$(ARCH)
 
-CFLAGS	+=	$(INCLUDE) -DARM9 -fno-dwarf2-cfi-asm -D_STORAGE_$(STORAGE)
+CFLAGS	+=	$(INCLUDE) -DARM9 -fno-dwarf2-cfi-asm -D_STORAGE_$(STORAGE) -DDEBUG
 CXXFLAGS	:=	$(CFLAGS) -fno-rtti -fno-exceptions
 #--ansi
 

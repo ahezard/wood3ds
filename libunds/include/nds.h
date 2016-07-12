@@ -236,6 +236,7 @@ extern "C" {
 #include "nds/fifocommon.h"
 #include "nds/touch.h"
 #include "nds/input.h"
+#include "nds/debug.h"
 
 
 //---------------------------------------------------------------------------------
@@ -264,6 +265,7 @@ extern "C" {
 #include "nds/arm7/input.h"
 #include "nds/arm7/serial.h"
 #include "nds/arm7/touch.h"
+#include "nds/arm7/sdmmc.h"
 
 //---------------------------------------------------------------------------------
 #endif // #ifdef ARM7

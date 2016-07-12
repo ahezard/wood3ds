@@ -19,6 +19,7 @@
 */
 
 #include <nds.h>
+#include <nds/debug.h>
 #include <cstdio>
 #include <vector>
 #include <map>
@@ -66,6 +67,8 @@ void __libnds_exit(int rc) {}
 
 int main(void)
 {
+	nocashMessage("ARM9 main.cpp main");
+	
     irq().init();
 
     windowManager();
@@ -92,11 +95,10 @@ int main(void)
     //wait_press_b();
     // init fat
     //bool succ = fatInitDefault();
-    bool succ = (ELM_Mount()&1)?false:true;
-    if( !succ )
-        dbg_printf( "init fat %d\n", succ );
+    int succ = ELM_Mount();
+    dbg_printf( "init fat %d\n", succ );
 
-    //wait_press_b();
+    wait_press_b();
 
     // setting scripts
     gs().loadSettings();

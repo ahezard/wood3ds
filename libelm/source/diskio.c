@@ -10,9 +10,12 @@
 #include <stdio.h>
 #include <limits.h>
 #include <time.h>
+
+#include <nds/arm9/dldi.h>
+#include <nds/debug.h>
+
 #ifdef USE_DLDI
 #include <string.h>
-#include <nds/arm9/dldi.h>
 #else
 #include <string.h>
 int ioWoodInit(unsigned char aDrive);
@@ -21,11 +24,14 @@ int ioWoodRead(unsigned char aDrive,unsigned char* aBuffer,unsigned long aSector
 int ioWoodWrite(unsigned char aDrive,const unsigned char* aBuffer,unsigned long aSector,unsigned char aCount);
 void ioWoodSync(unsigned char aDrive);
 #endif
+
+extern const DISC_INTERFACE __io_dsisd;
 /*-----------------------------------------------------------------------*/
 /* Correspondence between physical drive number and physical drive.      */
 
 #define NAND 0
 #define SD   1
+#define DSISD   2
 
 /*-----------------------------------------------------------------------*/
 /* CACHE                                                                 */
@@ -113,6 +119,8 @@ static void invalidate_cache(DWORD drv,DWORD sector,BYTE count)
 static const DISC_INTERFACE* disk=NULL;
 #endif
 
+static const DISC_INTERFACE* dsidisk=NULL;
+
 DSTATUS disk_initialize(BYTE drv)
 {
   switch(drv)
@@ -129,6 +137,14 @@ DSTATUS disk_initialize(BYTE drv)
     case SD:
       return ioWoodInit(drv)?0:STA_NOINIT;
 #endif
+	case DSISD:
+	  nocashMessage("diskio.c disk_initialize DSISD");
+      if(!dsidisk)
+      {
+	    dsidisk=&__io_dsisd;
+        if(!dsidisk->startup()) break;
+      }
+      return dsidisk->isInserted()?0:STA_NOINIT;
   }
   return STA_NOINIT;
 }
@@ -149,6 +165,8 @@ DSTATUS disk_status (
     case SD:
       return ioWoodStatus(drv)?0:STA_NOINIT;
 #endif
+	case DSISD:
+	  return dsidisk->isInserted()?0:STA_NOINIT;
   }
   return STA_NOINIT;
 }
@@ -174,6 +192,8 @@ DRESULT disk_read_internal (
     case SD:
       return ioWoodRead(drv,buff,sector,count)?RES_OK:RES_ERROR;
 #endif
+	case DSISD:
+	  return dsidisk->readSectors(sector,count,buff)?RES_OK:RES_ERROR;
   }
   return RES_PARERR;
 }
@@ -190,6 +210,7 @@ DRESULT disk_read (
   {
     case NAND:
     case SD:
+	case DSISD:
       if(count==1&&read_from_cache(drv,sector,buff)) return RES_OK;
       if(count!=1) invalidate_cache(drv,sector,count);
       res=disk_read_internal(drv,buff,sector,count);
@@ -224,6 +245,9 @@ DRESULT disk_write (
 #else
       return ioWoodWrite(drv,buff,sector,count)?RES_OK:RES_ERROR;
 #endif
+	case DSISD:
+	  invalidate_cache(drv,sector,count);
+	  return dsidisk->writeSectors(sector,count,buff)?RES_OK:RES_ERROR;
   }
   return RES_PARERR;
 }
@@ -240,6 +264,10 @@ DRESULT disk_ioctl (
   void *buff    /* Buffer to send/receive control data */
 )
 {
+  if(drv==DSISD&&ctrl==CTRL_SYNC)
+  {
+    return dsidisk->clearStatus()?RES_OK:RES_ERROR;
+  }
 #ifdef USE_DLDI
   if(drv==NAND&&ctrl==CTRL_SYNC)
   {

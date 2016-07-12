@@ -36,7 +36,6 @@
 #endif
 #define SD_ROOT SD_ROOT_0"/"
 
-// 显示游戏列表，文件列表等等
 class cMainList : public akui::cListView
 {
 public:

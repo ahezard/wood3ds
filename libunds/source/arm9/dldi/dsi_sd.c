@@ -3,11 +3,15 @@
 #include <nds/fifomessages.h>
 #include <nds/system.h>
 #include <nds/arm9/cache.h>
+#include <nds/debug.h>
 
 //---------------------------------------------------------------------------------
 bool sdio_Startup() {
 //---------------------------------------------------------------------------------
-	if (!REG_DSIMODE) return false;
+	nocashMessage("dsi_sd.c sdio_Startup");
+	
+	if (!REG_DSIMODE) return false;	
+
 
 	fifoSendValue32(FIFO_SDMMC,SDMMC_HAVE_SD);
 	

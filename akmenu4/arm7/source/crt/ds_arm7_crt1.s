@@ -58,7 +58,7 @@ _blx_r3_stub:
 ClearMem:
 @---------------------------------------------------------------------------------
 	mov	r2, #3			@ Round down to nearest word boundary
-	add	r1, r1, r2		@ Shouldn't be needed
+	add	r1, r1, r2		@ Shouldnt be needed
 	bics	r1, r1, r2		@ Clear 2 LSB (and set Z)
 	bxeq	lr			@ Quit if copy size is 0
 
