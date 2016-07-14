@@ -8,20 +8,24 @@
 //---------------------------------------------------------------------------------
 bool sdio_Startup() {
 //---------------------------------------------------------------------------------
-	nocashMessage("dsi_sd.c sdio_Startup");
-	
-	if (!REG_DSIMODE) return false;	
+	nocashMessage("libnds/arm9/dldi/dsi_sd.c sdio_Startup\n");
+	if (!REG_DSIMODE) return false;
 
-
+	nocashMessage("libnds/arm9/dldi/dsi_sd.c fifoSendValue32(FIFO_SDMMC,SDMMC_HAVE_SD);\n");
 	fifoSendValue32(FIFO_SDMMC,SDMMC_HAVE_SD);
 	
-	while(!fifoCheckValue32(FIFO_SDMMC)) ;
+	nocashMessage("libnds/arm9/dldi/dsi_sd.c fifoCheckValue32(FIFO_SDMMC);\n");
+	while(!fifoCheckValue32(FIFO_SDMMC)) {
+		nocashMessage("libnds/arm9/dldi/dsi_sd.c fifoCheckValue32(FIFO_SDMMC);\n");
+	}
+	nocashMessage("libnds/arm9/dldi/dsi_sd.c int result = fifoGetValue32(FIFO_SDMMC);\n");
 	int result = fifoGetValue32(FIFO_SDMMC);
 
 	if(result==0) return false;
 
 	fifoSendValue32(FIFO_SDMMC,SDMMC_SD_START);
 
+	nocashMessage("libnds/arm9/dldi/dsi_sd.c fifoWaitValue32(FIFO_SDMMC);\n");
 	fifoWaitValue32(FIFO_SDMMC);
 
 	result = fifoGetValue32(FIFO_SDMMC);
@@ -32,6 +36,7 @@ bool sdio_Startup() {
 //---------------------------------------------------------------------------------
 bool sdio_IsInserted() {
 //---------------------------------------------------------------------------------
+	nocashMessage("libnds/arm9/dldi/dsi_sd.c sdio_IsInserted\n");
 	if (!REG_DSIMODE) return false;
 
 	fifoSendValue32(FIFO_SDMMC,SDMMC_SD_IS_INSERTED);
@@ -46,6 +51,7 @@ bool sdio_IsInserted() {
 //---------------------------------------------------------------------------------
 bool sdio_ReadSectors(sec_t sector, sec_t numSectors,void* buffer) {
 //---------------------------------------------------------------------------------
+	nocashMessage("libnds/arm9/dldi/dsi_sd.c sdio_ReadSectors\n");
 	if (!REG_DSIMODE) return false;
 	FifoMessage msg;
 
@@ -76,6 +82,7 @@ bool sdio_ReadSectors(sec_t sector, sec_t numSectors,void* buffer) {
 //---------------------------------------------------------------------------------
 bool sdio_WriteSectors(sec_t sector, sec_t numSectors,const void* buffer) {
 //---------------------------------------------------------------------------------
+	nocashMessage("libnds/arm9/dldi/dsi_sd.c sdio_WriteSectors\n");
 	if (!REG_DSIMODE) return false;
 	FifoMessage msg;
 

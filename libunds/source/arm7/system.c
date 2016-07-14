@@ -93,7 +93,7 @@ void powerValueHandler(u32 value, void* user_data) {
 	}
 }
 
-void sdmmcValueHandler(u32 value, void* user_data);
+extern void sdmmcValueHandler(u32 value, void* user_data);
 
 //---------------------------------------------------------------------------------
 void installSystemFIFO(void) {
