@@ -22,6 +22,7 @@ int ioWoodInit(unsigned char aDrive);
 int ioWoodStatus(unsigned char aDrive);
 int ioWoodRead(unsigned char aDrive,unsigned char* aBuffer,unsigned long aSector,unsigned char aCount);
 int ioWoodWrite(unsigned char aDrive,const unsigned char* aBuffer,unsigned long aSector,unsigned char aCount);
+int ioWoodWrite(unsigned char aDrive,const unsigned char* aBuffer,unsigned long aSector,unsigned char aCount);
 void ioWoodSync(unsigned char aDrive);
 #endif
 

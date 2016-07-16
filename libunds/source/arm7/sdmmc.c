@@ -19,6 +19,7 @@ static struct mmcdevice deviceNAND;
 //---------------------------------------------------------------------------------
 int geterror(struct mmcdevice *ctx) {
 //---------------------------------------------------------------------------------
+    nocashMessage("sdmmc.c geterror");
     //if(ctx->error == 0x4) return -1;
     //else return 0;
     return (ctx->error << 29) >> 31;
@@ -28,6 +29,7 @@ int geterror(struct mmcdevice *ctx) {
 //---------------------------------------------------------------------------------
 void setTarget(struct mmcdevice *ctx) {
 //---------------------------------------------------------------------------------
+    nocashMessage("sdmmc.c setTarget");
     sdmmc_mask16(REG_SDPORTSEL,0x3,(u16)ctx->devicenumber);
     setckl(ctx->clk);
     if (ctx->SDOPT == 0) {
@@ -42,6 +44,7 @@ void setTarget(struct mmcdevice *ctx) {
 //---------------------------------------------------------------------------------
 void sdmmc_send_command(struct mmcdevice *ctx, uint32_t cmd, uint32_t args) {
 //---------------------------------------------------------------------------------
+    nocashMessage("sdmmc.c sdmmc_send_command");
 	int i;
     bool getSDRESP = (cmd << 15) >> 31;
     uint16_t flags = (cmd << 15) >> 31;
@@ -321,58 +324,6 @@ int sdmmc_sdcard_init() {
 }
 
 //---------------------------------------------------------------------------------
-int sdmmc_nand_init() {
-//---------------------------------------------------------------------------------
-    setTarget(&deviceNAND);
-    swiDelay(0xF000);
-
-    sdmmc_send_command(&deviceNAND,0,0);
-
-    do {
-        do {
-            sdmmc_send_command(&deviceNAND,0x10701,0x100000);
-        } while ( !(deviceNAND.error & 1) );
-    }
-    while((deviceNAND.ret[0] & 0x80000000) == 0);
-
-    sdmmc_send_command(&deviceNAND,0x10602,0x0);
-    if((deviceNAND.error & 0x4))return -1;
-
-    sdmmc_send_command(&deviceNAND,0x10403,deviceNAND.initarg << 0x10);
-    if((deviceNAND.error & 0x4))return -1;
-
-    sdmmc_send_command(&deviceNAND,0x10609,deviceNAND.initarg << 0x10);
-    if((deviceNAND.error & 0x4))return -1;
-
-    deviceNAND.total_size = calcSDSize((uint8_t*)&deviceNAND.ret[0],0);
-    deviceNAND.clk = 1;
-    setckl(1);
-
-    sdmmc_send_command(&deviceNAND,0x10407,deviceNAND.initarg << 0x10);
-    if((deviceNAND.error & 0x4))return -1;
-
-    deviceNAND.SDOPT = 1;
-
-    sdmmc_send_command(&deviceNAND,0x10506,0x3B70100);
-    if((deviceNAND.error & 0x4))return -1;
-
-    sdmmc_send_command(&deviceNAND,0x10506,0x3B90100);
-    if((deviceNAND.error & 0x4))return -1;
-
-    sdmmc_send_command(&deviceNAND,0x1040D,deviceNAND.initarg << 0x10);
-    if((deviceNAND.error & 0x4))return -1;
-
-    sdmmc_send_command(&deviceNAND,0x10410,0x200);
-    if((deviceNAND.error & 0x4))return -1;
-
-    deviceNAND.clk |= 0x200;
-
-    setTarget(&deviceSD);
-
-    return 0;
-}
-
-//---------------------------------------------------------------------------------
 int sdmmc_readsectors(struct mmcdevice *device, u32 sector_no, u32 numsectors, void *out) {
 //---------------------------------------------------------------------------------
     if (device->isSDHC == 0) sector_no <<= 9;
@@ -413,84 +364,83 @@ int sdmmc_writesectors(struct mmcdevice *device, u32 sector_no, u32 numsectors, 
     return geterror(device);
 }
 
+static int msg_count = 0;
+static FifoMessage msg;
+
 //---------------------------------------------------------------------------------
-void sdmmcMsgHandler(int bytes, void *user_data) {
+void sdmmcMsgHandler(u32 value, void* user_data) {
 //---------------------------------------------------------------------------------
-    FifoMessage msg;
-    int retval = 0;
-	
-	fifoWaitValue32(FIFO_SDMMC);
-	msg.type = fifoGetValue32(FIFO_SDMMC);
-	fifoWaitValue32(FIFO_SDMMC);
-	msg.sdParams.startsector = fifoGetValue32(FIFO_SDMMC);
-	fifoWaitValue32(FIFO_SDMMC);
-	msg.sdParams.numsectors = fifoGetValue32(FIFO_SDMMC);
-	fifoWaitValue32(FIFO_SDMMC);
-	msg.sdParams.buffer = (void*) fifoGetValue32(FIFO_SDMMC);
+	switch(msg_count) {
+		case 0:
+			msg.type = value;
+			msg_count++;
+			fifoSendValue32(FIFO_SDMMC, SDMMC_MSG);
+			break;
+		case 1:
+			msg.sdParams.startsector = value;
+			msg_count++;
+			fifoSendValue32(FIFO_SDMMC, SDMMC_MSG);
+			break;
+		case 2:
+			msg.sdParams.numsectors = value;
+			msg_count++;
+			fifoSendValue32(FIFO_SDMMC, SDMMC_MSG);
+			break;
+		case 3:
+			msg.sdParams.buffer = value;
+			msg_count++;
+			
+			int retval = 0;
+			
+			int oldIME = enterCriticalSection();
+			switch (msg.type) {
+				case SDMMC_SD_READ_SECTORS:
+					retval = sdmmc_readsectors(&deviceSD, msg.sdParams.startsector, msg.sdParams.numsectors, msg.sdParams.buffer);
+					break;
+				case SDMMC_SD_WRITE_SECTORS:
+					retval = sdmmc_writesectors(&deviceSD, msg.sdParams.startsector, msg.sdParams.numsectors, msg.sdParams.buffer);
+					break;
+			}
 
-    int oldIME = enterCriticalSection();
-    switch (msg.type) {
-
-    case SDMMC_SD_READ_SECTORS:
-        retval = sdmmc_readsectors(&deviceSD, msg.sdParams.startsector, msg.sdParams.numsectors, msg.sdParams.buffer);
-        break;
-    case SDMMC_SD_WRITE_SECTORS:
-        retval = sdmmc_writesectors(&deviceSD, msg.sdParams.startsector, msg.sdParams.numsectors, msg.sdParams.buffer);
-        break;
-    case SDMMC_NAND_READ_SECTORS:
-        retval = sdmmc_readsectors(&deviceNAND, msg.sdParams.startsector, msg.sdParams.numsectors, msg.sdParams.buffer);
-        break;
-    case SDMMC_NAND_WRITE_SECTORS:
-        retval = sdmmc_writesectors(&deviceNAND, msg.sdParams.startsector, msg.sdParams.numsectors, msg.sdParams.buffer);
-
-    }
-
-    leaveCriticalSection(oldIME);
-
-    fifoSendValue32(FIFO_SDMMC, retval);
+			leaveCriticalSection(oldIME);
+			fifoSendValue32(FIFO_SDMMC, retval);
+			break;
+	}
 }
-
-static bool msgMode = false;
 
 //---------------------------------------------------------------------------------
 void sdmmcValueHandler(u32 value, void* user_data) {
 //---------------------------------------------------------------------------------
-    nocashMessage("sdmmc.c sdmmcValueHandler");
     int result = 0;
 
     int oldIME = enterCriticalSection();
 
+	switch(value) {
 
-	if(!msgMode) {
-		switch(value) {
+	case SDMMC_HAVE_SD:
+		result = sdmmc_read16(REG_SDSTATUS0);
+		break;
 
-		case SDMMC_HAVE_SD:
-			result = sdmmc_read16(REG_SDSTATUS0);
-			break;
-
-		case SDMMC_SD_START:
-			if (sdmmc_read16(REG_SDSTATUS0) == 0) {
-				result = 1;
-			} else {
-				sdmmc_controller_init();
-				result = sdmmc_sdcard_init();
-			}
-			break;
-
-		case SDMMC_SD_IS_INSERTED:
-			result = sdmmc_cardinserted();
-			break;
-
-		case SDMMC_SD_STOP:
-			break;		
-			
-		case SDMMC_MSG:
-			msgMode = true;
-			fifoSendValue32(FIFO_SDMMC, SDMMC_MSG);
-			sdmmcMsgHandler(0,0);
-			msgMode = false;
-			break;		
+	case SDMMC_SD_START:
+		if (sdmmc_read16(REG_SDSTATUS0) == 0) {
+			result = 1;
+		} else {
+			sdmmc_controller_init();
+			result = sdmmc_sdcard_init();
 		}
+		break;
+
+	case SDMMC_SD_IS_INSERTED:
+		result = sdmmc_cardinserted();
+		break;
+
+	case SDMMC_SD_STOP:
+		break;		
+		
+	case SDMMC_MSG:
+	    msg_count = 0;
+		fifoSendValue32(FIFO_SDMMC, SDMMC_MSG);
+		break;		
 	}
 	
 

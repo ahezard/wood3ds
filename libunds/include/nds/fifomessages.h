@@ -39,11 +39,12 @@ typedef enum {
 	MIC_RECORD_MESSAGE,
 	MIC_BUFFER_FULL_MESSAGE,
 	SYS_INPUT_MESSAGE,
-	SDMMC_SD_READ_SECTORS,
-	SDMMC_SD_WRITE_SECTORS,
-	SDMMC_NAND_READ_SECTORS,
-	SDMMC_NAND_WRITE_SECTORS
 } FifoMessageType;
+
+typedef enum {
+	SDMMC_SD_READ_SECTORS = (1<<16),
+	SDMMC_SD_WRITE_SECTORS = (2<<16),
+} FifoSDMessageType;
 
 typedef struct FifoMessage {
 	u16 type;

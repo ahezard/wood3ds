@@ -94,6 +94,7 @@ void powerValueHandler(u32 value, void* user_data) {
 }
 
 extern void sdmmcValueHandler(u32 value, void* user_data);
+extern void sdmmcMsgHandler(u32 value, void* user_data);
 
 //---------------------------------------------------------------------------------
 void installSystemFIFO(void) {
@@ -101,6 +102,7 @@ void installSystemFIFO(void) {
     
 	fifoSetValue32Handler(FIFO_PM, powerValueHandler, 0);
 	fifoSetValue32Handler(FIFO_SDMMC, sdmmcValueHandler, 0);
+	fifoSetValue32Handler(FIFO_SDMSG, sdmmcMsgHandler, 0);	
 	
 	nocashMessage("system.c installSystemFIFO");
 }

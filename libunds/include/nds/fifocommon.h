@@ -14,18 +14,18 @@ typedef enum {
    FIFO_INPUT 	= 1,	/*!< \brief fifo channel reserved for input functions. */
    FIFO_CLOCK 	= 2,	/*!< \brief fifo channel reserved for clock functions. */
    FIFO_SDMMC   = 3,	/*!< \brief fifo channel reserved for sd/nand functions. */
-   FIFO_USER_01	= 4,	/*!< \brief fifo channel available for users. */
-   FIFO_USER_02	= 5,	/*!< \brief fifo channel available for users. */
-   FIFO_USER_03	= 6,	/*!< \brief fifo channel available for users. */
-   FIFO_USER_04	= 7,	/*!< \brief fifo channel available for users. */
-   FIFO_USER_05	= 8,	/*!< \brief fifo channel available for users. */
-   FIFO_USER_06	= 9,	/*!< \brief fifo channel available for users. */
-   FIFO_USER_07	= 10,	/*!< \brief fifo channel available for users. */
-   FIFO_USER_08	= 11,	/*!< \brief fifo channel available for users. */
-   FIFO_USER_09	= 12,	/*!< \brief fifo channel available for users. */
-   FIFO_USER_10	= 13,	/*!< \brief fifo channel available for users. */
-   FIFO_USER_11	= 14,	/*!< \brief fifo channel available for users. */
-   FIFO_USER_12	= 15 	/*!< \brief fifo channel available for users. */
+   FIFO_SDMSG   = 4,	/*!< \brief fifo channel reserved for sd/nand functions. */
+   FIFO_USER_01	= 5,	/*!< \brief fifo channel available for users. */
+   FIFO_USER_02	= 6,	/*!< \brief fifo channel available for users. */
+   FIFO_USER_03	= 7,	/*!< \brief fifo channel available for users. */
+   FIFO_USER_04	= 8,	/*!< \brief fifo channel available for users. */
+   FIFO_USER_05	= 9,	/*!< \brief fifo channel available for users. */
+   FIFO_USER_06	= 10,	/*!< \brief fifo channel available for users. */
+   FIFO_USER_07	= 11,	/*!< \brief fifo channel available for users. */
+   FIFO_USER_08	= 12,	/*!< \brief fifo channel available for users. */
+   FIFO_USER_09	= 13,	/*!< \brief fifo channel available for users. */
+   FIFO_USER_10	= 14,	/*!< \brief fifo channel available for users. */
+   FIFO_USER_11	= 15,	/*!< \brief fifo channel available for users. */
 } FifoChannels;
 
 //! Enum values for the fifo power management commands.
