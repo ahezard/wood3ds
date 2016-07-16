@@ -68,8 +68,6 @@ bool sdio_ReadSectors(sec_t sector, sec_t numSectors,void* buffer) {
 	nocashMessage("libnds/arm9/dldi/dsi_sd.c fifoWaitValue32\n");
 	fifoGetValue32(FIFO_SDMMC);
 	
-	swiDelay(10);
-	
 	nocashMessage("libnds/arm9/dldi/dsi_sd.c fifoSendValue32(FIFO_SDMSG, SDMMC_SD_READ_SECTORS);\n");
 	fifoSendValue32(FIFO_SDMSG, SDMMC_SD_READ_SECTORS);
 	fifoWaitValue32(FIFO_SDMMC);
