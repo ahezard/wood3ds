@@ -124,6 +124,7 @@ static const DISC_INTERFACE* dsidisk=NULL;
 
 DSTATUS disk_initialize(BYTE drv)
 {
+  nocashMessage("diskio.c disk_initialize\n");
   switch(drv)
   {
     case NAND:
@@ -142,11 +143,15 @@ DSTATUS disk_initialize(BYTE drv)
 	  nocashMessage("diskio.c disk_initialize DSISD");
       if(!dsidisk)
       {
+	    nocashMessage("diskio.c disk_initialize !dsidisk");
 	    dsidisk=&__io_dsisd;
+	    nocashMessage("diskio.c disk_initialize dsidisk->startup()");
         if(!dsidisk->startup()) break;
       }
+	  nocashMessage("diskio.c disk_initialize STA_NOINIT");
       return dsidisk->isInserted()?0:STA_NOINIT;
   }
+  nocashMessage("diskio.c disk_initialize STA_NOINIT");
   return STA_NOINIT;
 }
 
@@ -157,6 +162,7 @@ DSTATUS disk_status (
   BYTE drv    /* Physical drive nmuber (0..) */
 )
 {
+  nocashMessage("diskio.c disk_status\n");
   switch(drv)
   {
     case NAND:
@@ -184,6 +190,7 @@ DRESULT disk_read_internal (
   BYTE count    /* Number of sectors to read (1..255) */
 )
 {
+  nocashMessage("diskio.c disk_read_internal\n");
   switch(drv)
   {
     case NAND:
@@ -234,6 +241,7 @@ DRESULT disk_write (
   BYTE count      /* Number of sectors to write (1..255) */
 )
 {
+  nocashMessage("diskio.c disk_write\n");
   switch(drv)
   {
     case NAND:
@@ -265,6 +273,7 @@ DRESULT disk_ioctl (
   void *buff    /* Buffer to send/receive control data */
 )
 {
+  nocashMessage("diskio.c disk_ioctl\n");
   if(drv==DSISD&&ctrl==CTRL_SYNC)
   {
     return dsidisk->clearStatus()?RES_OK:RES_ERROR;
@@ -295,6 +304,7 @@ DRESULT disk_ioctl (
 
 DWORD get_fattime()
 {
+  nocashMessage("diskio.c get_fattime\n");
   struct tm timeParts;
   time_t epochTime;
 
