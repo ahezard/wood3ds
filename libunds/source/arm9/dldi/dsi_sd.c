@@ -106,13 +106,13 @@ bool sdio_ReadSectors(sec_t sector, sec_t numSectors,void* buffer) {
 	#endif//DEBUG
 	
 	fifoSendValue32(FIFO_SDMSG, SDMMC_SD_READ_SECTORS);
-	fifoWaitValue32(FIFO_SDMMC);
+	fifoWaitValue32(FIFO_SDMMC);fifoGetValue32(FIFO_SDMMC);
 	nocashMessage("libnds/arm9/dldi/dsi_sd.c fifoSendValue32(FIFO_SDMSG, sector);\n");
 	fifoSendValue32(FIFO_SDMSG, sector);
-	fifoWaitValue32(FIFO_SDMMC);
+	fifoWaitValue32(FIFO_SDMMC);fifoGetValue32(FIFO_SDMMC);	
 	nocashMessage("libnds/arm9/dldi/dsi_sd.c fifoSendValue32(FIFO_SDMSG, numSectors);\n");
 	fifoSendValue32(FIFO_SDMSG, numSectors);
-	fifoWaitValue32(FIFO_SDMMC);
+	fifoWaitValue32(FIFO_SDMMC);fifoGetValue32(FIFO_SDMMC);
 	nocashMessage("libnds/arm9/dldi/dsi_sd.c fifoSendValue32(FIFO_SDMSG, buffer);\n");
 	fifoSendValue32(FIFO_SDMSG, (int)buffer);
 
@@ -142,8 +142,7 @@ bool sdio_WriteSectors(sec_t sector, sec_t numSectors,const void* buffer) {
 	
 	// switch to MSG mode
 	fifoSendValue32(FIFO_SDMMC, SDMMC_MSG);	
-	fifoWaitValue32(FIFO_SDMMC);
-	fifoGetValue32(FIFO_SDMMC);
+	fifoWaitValue32(FIFO_SDMMC);fifoGetValue32(FIFO_SDMMC);
 
 	msg.type = SDMMC_SD_WRITE_SECTORS;
 	msg.sdParams.startsector = sector;
@@ -151,11 +150,11 @@ bool sdio_WriteSectors(sec_t sector, sec_t numSectors,const void* buffer) {
 	msg.sdParams.buffer = (void*)buffer;
 	
 	fifoSendValue32(FIFO_SDMSG, msg.type);
-	fifoWaitValue32(FIFO_SDMMC);
+	fifoWaitValue32(FIFO_SDMMC);fifoGetValue32(FIFO_SDMMC);
 	fifoSendValue32(FIFO_SDMSG, msg.sdParams.startsector);
-	fifoWaitValue32(FIFO_SDMMC);
+	fifoWaitValue32(FIFO_SDMMC);fifoGetValue32(FIFO_SDMMC);
 	fifoSendValue32(FIFO_SDMSG, msg.sdParams.numsectors);
-	fifoWaitValue32(FIFO_SDMMC);
+	fifoWaitValue32(FIFO_SDMMC);fifoGetValue32(FIFO_SDMMC);
 	fifoSendValue32(FIFO_SDMSG, (int)msg.sdParams.buffer);
 
 	fifoWaitValue32(FIFO_SDMMC);
