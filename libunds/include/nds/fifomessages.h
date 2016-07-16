@@ -42,8 +42,8 @@ typedef enum {
 } FifoMessageType;
 
 typedef enum {
-	SDMMC_SD_READ_SECTORS = (1<<16),
-	SDMMC_SD_WRITE_SECTORS = (2<<16),
+	SDMMC_SD_READ_SECTORS = (1),
+	SDMMC_SD_WRITE_SECTORS = (2),
 } FifoSDMessageType;
 
 typedef struct FifoMessage {

@@ -240,6 +240,7 @@ void sdmmc_controller_init() {
 static u32 calcSDSize(u8* csd, int type) {
 //---------------------------------------------------------------------------------
     nocashMessage("sdmmc.c calcSDSize");
+	
     u32 result = 0;
     if (type == -1) type = csd[14] >> 6;
     switch (type) {
@@ -329,8 +330,6 @@ int sdmmc_sdcard_init() {
 int sdmmc_readsectors(struct mmcdevice *device, u32 sector_no, u32 numsectors, void *out) {
 //---------------------------------------------------------------------------------
 	nocashMessage("libnds/arm9/dldi/dsi_sd.c sdmmc_readsectors\n");
-	char buf[64];
-	siprintf(buf, "%X-%X-%X", sector_no, numsectors, out);
 	
     if (device->isSDHC == 0) sector_no <<= 9;
     setTarget(device);
