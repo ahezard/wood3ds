@@ -49,7 +49,7 @@ int elm_error;
 #define ELM_SD   1
 #define ELM_DSISD   2
 static FATFS _elm[3];
-#define VALID_DISK(disk) (disk==ELM_NAND||disk==ELM_SD||ELM_DSISD)
+#define VALID_DISK(disk) (disk==ELM_NAND||disk==ELM_SD||disk==ELM_DSISD)
 
 int _ELM_open_r(struct _reent *r, void *fileStruct, const char *path, int flags, int mode);
 int _ELM_close_r(struct _reent *r, int fd);
@@ -428,8 +428,10 @@ static void _ELM_fileinfo_to_stat(const TCHAR* path,const FILINFO* fi,struct sta
 
 static int _ELM_chk_mounted(int disk)
 {
+  nocashMessage("libelm.c _ELM_chk_mounted");
   if(VALID_DISK(disk))
   {
+    nocashMessage("libelm.c VALID_DISK(disk)");
     if(!_elm[disk].fs_type)
     {
       FILINFO fi;
@@ -444,6 +446,7 @@ static int _ELM_chk_mounted(int disk)
 
 static void _ELM_disk_to_stat(int disk,struct stat* st)
 {
+  nocashMessage("libelm.c _ELM_disk_to_stat");
   memset(st,0,sizeof(*st));
   if(_ELM_chk_mounted(disk))
   {
@@ -692,7 +695,9 @@ int ELM_Mount(void)
   }
   if(!(ret&4))
   {
+  	nocashMessage("libelm.c _ELM_chk_mounted(2);\n");
     _ELM_chk_mounted(2);
+	nocashMessage("libelm.c AddDevice(&dotab_elm2);\n");
     AddDevice(&dotab_elm2);
   }
   elm_error=0;
@@ -711,6 +716,7 @@ void ELM_Unmount(void)
 
 int ELM_ClusterSizeFromDisk(int disk,uint32_t* size)
 {
+  nocashMessage("libelm.c ELM_ClusterSizeFromDisk\n");
   if(_ELM_chk_mounted(disk))
   {
     *size=_elm[disk].csize*ELM_SS(_elm[disk]);
@@ -721,6 +727,7 @@ int ELM_ClusterSizeFromDisk(int disk,uint32_t* size)
 
 int ELM_ClustersFromDisk(int disk,uint32_t* clusters)
 {
+  nocashMessage("libelm.c ELM_ClustersFromDisk\n");
   if(_ELM_chk_mounted(disk))
   {
     *clusters=_elm[disk].n_fatent-2;
@@ -731,6 +738,7 @@ int ELM_ClustersFromDisk(int disk,uint32_t* clusters)
 
 int ELM_FreeClustersFromDisk(int disk,uint32_t* clusters)
 {
+  nocashMessage("libelm.c ELM_FreeClustersFromDisk\n");
   if(VALID_DISK(disk))
   {
     FATFS *fs;
@@ -748,6 +756,7 @@ int ELM_FreeClustersFromDisk(int disk,uint32_t* clusters)
 
 int ELM_SectorsFromDisk(int disk,uint32_t* sectors)
 {
+  nocashMessage("libelm.c ELM_SectorsFromDisk\n");
   if(_ELM_chk_mounted(disk))
   {
     *sectors=(_elm[disk].n_fatent-2)*_elm[disk].csize;
