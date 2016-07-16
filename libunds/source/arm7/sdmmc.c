@@ -239,6 +239,7 @@ void sdmmc_controller_init() {
 //---------------------------------------------------------------------------------
 static u32 calcSDSize(u8* csd, int type) {
 //---------------------------------------------------------------------------------
+    nocashMessage("sdmmc.c calcSDSize");
     u32 result = 0;
     if (type == -1) type = csd[14] >> 6;
     switch (type) {
@@ -267,6 +268,7 @@ static u32 calcSDSize(u8* csd, int type) {
 //---------------------------------------------------------------------------------
 int sdmmc_sdcard_init() {
 //---------------------------------------------------------------------------------
+    nocashMessage("sdmmc.c sdmmc_sdcard_init");
     setTarget(&deviceSD);
     swiDelay(0xF000);
     sdmmc_send_command(&deviceSD,0,0);
@@ -326,6 +328,10 @@ int sdmmc_sdcard_init() {
 //---------------------------------------------------------------------------------
 int sdmmc_readsectors(struct mmcdevice *device, u32 sector_no, u32 numsectors, void *out) {
 //---------------------------------------------------------------------------------
+	nocashMessage("libnds/arm9/dldi/dsi_sd.c sdmmc_readsectors\n");
+	char buf[64];
+	siprintf(buf, "%X-%X-%X", sector_no, numsectors, out);
+	
     if (device->isSDHC == 0) sector_no <<= 9;
     setTarget(device);
     sdmmc_write16(REG_SDSTOP,0x100);
@@ -439,7 +445,6 @@ void sdmmcValueHandler(u32 value, void* user_data) {
 		
 	case SDMMC_MSG:
 	    msg_count = 0;
-		fifoSendValue32(FIFO_SDMMC, SDMMC_MSG);
 		break;		
 	}
 	
