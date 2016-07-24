@@ -67,6 +67,10 @@ DC_FlushRange:
 	add	r0, r0, #CACHE_LINE_SIZE
 	cmp	r0, r1
 	blt	.flush
+
+drainWriteBuffer:
+	mov     r0, #0
+	mcr     p15, 0, r0, c7, c10, 4		@ drain write buffer
 	bx	lr
 
 //---------------------------------------------------------------------------------
