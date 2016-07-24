@@ -91,7 +91,7 @@ void sdmmc_send_command(struct mmcdevice *ctx, uint32_t cmd, uint32_t args) {
         if((status1 & TMIO_STAT1_RXRDY))
 #endif
         {
-            if(readdata) {
+            //if(readdata) {
                 if(useBuf) {
                     sdmmc_mask16(REG_SDSTATUS1, TMIO_STAT1_RXRDY, 0);
                     if(size > 0x1FF) {
@@ -113,7 +113,7 @@ void sdmmc_send_command(struct mmcdevice *ctx, uint32_t cmd, uint32_t args) {
                 }
 
                 sdmmc_mask16(REG_SDDATACTL32, 0x800, 0);
-            }
+            //}
         }
 #ifdef DATA32_SUPPORT
         if(!(ctl32 & 0x200))
@@ -121,7 +121,7 @@ void sdmmc_send_command(struct mmcdevice *ctx, uint32_t cmd, uint32_t args) {
         if((status1 & TMIO_STAT1_TXRQ))
 #endif
         {
-            if(writedata) {
+            //if(writedata) {
                 if(useBuf) {
                     sdmmc_mask16(REG_SDSTATUS1, TMIO_STAT1_TXRQ, 0);
                     //sdmmc_write16(REG_SDSTATUS1,~TMIO_STAT1_TXRQ);
@@ -140,7 +140,7 @@ void sdmmc_send_command(struct mmcdevice *ctx, uint32_t cmd, uint32_t args) {
                 }
 
                 sdmmc_mask16(REG_SDDATACTL32, 0x1000, 0);
-            }
+            //}
         }
         if(status1 & TMIO_MASK_GW) {
             ctx->error |= 4;
