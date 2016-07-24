@@ -28,7 +28,7 @@ parser.add_argument('--extract', help='extract the content of the rom : header.b
 parser.add_argument('--title', help='Game title')
 parser.add_argument('--code', help='Game code')
 parser.add_argument('--maker', help='Maker code')
-parser.add_argument('--mode', help='target mode, default mode is ds [ds|dsdsi|dsi]')
+parser.add_argument('--mode', help='target mode, default mode is ds [ds|dsi|dsinogba]')
 parser.add_argument('--arm7', type=file, help='swap the ds arm7 binary by the one provided')
 parser.add_argument('--arm7EntryAddress', help='arm7 ram address of the binary provided')
 parser.add_argument('--arm9i', type=file, help='add a dsi arm9i binary to the file, not needed for homebrew so far')
@@ -36,6 +36,9 @@ parser.add_argument('--arm7i', type=file, help='add a dsi arm7i binary to the fi
 parser.add_argument('--digest-block', type=file, help='dsi digest block table')	#Not yet implemented
 parser.add_argument('--digest-sector', type=file, help='dsi digest sector table')	#Not yet implemented
 args = parser.parse_args()
+
+if args.mode is None:
+	args.mode = "ds"
 
 #
 # CRC16 MODULE
@@ -249,7 +252,7 @@ if args.arm7 is not None:
 		deviceCapacity=		srlHeader.deviceCapacity+1
 	)
 
-if args.mode == "dsi":
+if "dsi" in args.mode :
 	srlHeaderPatched=srlHeaderPatched._replace(
 		deviceCapacity=				srlHeaderPatched.deviceCapacity+2,
 		dsiflags=					'\x01\x00', #disable modcrypt but enable twl
@@ -343,7 +346,7 @@ if not args.read:
 		unknown1=			'\x00\x00\x01\x00',
 		reserved_flags=		0x01000000
 		)
-	if args.mode == "dsi":
+	if "dsi" in args.mode:
 		arm7iRomOffset=srlHeaderPatched.arm7RomOffset
 		arm9iRomOffset=srlHeaderPatched.arm9RomOffset	
 		arm7isize=srlHeaderPatched.arm7Size
@@ -380,10 +383,10 @@ if not args.read:
 			#arm7ScfgExtMask= 		0x80044000,
 			arm7ScfgExtMask=		0xFFFFFFFF,
 			reserved_flags=			0x01000000,
-			arm7iLoadAddress= 		srlHeaderPatched.arm7EntryAddress,
+			arm7iLoadAddress= 		0x2E80000,
 			arm7iRomOffset= 		arm7iRomOffset,
 			arm7iSize= 				arm7isize,
-			arm9iLoadAddress= 		srlHeaderPatched.arm9EntryAddress,
+			arm9iLoadAddress= 		0x2400000,
 			arm9iRomOffset= 		arm9iRomOffset,
 			arm9iSize= 				arm9isize,			
 			global_MBK_9_Setting= 	'\x0f\x00\x00\x03',	
@@ -396,6 +399,13 @@ if not args.read:
 			unknown2=				'\x00\x00\x00\x00|\x0f\x00\x00 \x05\x00\x00',
 			parentalControl=		'\x80'*16 
 			)
+			
+		if "dsinogba" in args.mode :
+			# Fix for no$gba 2.8d
+			srlTwlExtHeader=srlTwlExtHeader._replace(
+				arm7iLoadAddress= 		srlHeaderPatched.arm7EntryAddress,
+				arm9iLoadAddress= 		srlHeaderPatched.arm9EntryAddress
+				)
 
 if args.verbose or args.read:	
 	pprint(dict(srlTwlExtHeader._asdict()))
@@ -435,7 +445,7 @@ if not args.read:
 		bannerSha1Hmac=				'\xff'*20,
 		signature=					'\xff'*128
 		)
-	if args.mode == "dsi":
+	if "dsi" in args.mode :
 		srlSignedHeader=srlSignedHeader._replace(
 			arm7Sha1Hmac=				'\xff'*20,
 			arm7iSha1Hmac=				'\xff'*20,
@@ -519,7 +529,7 @@ if not args.read:
 	
 	skipUntilAddress(filer,filew,caddr,srlHeader.ntrRomSize)
 	
-	if args.mode == "dsi":
+	if "dsi" in args.mode:
 		# add dsi specific data
 		# dixit apache : Digest Table offset first, then sector table, then Arm9i, then arm7i.
 		# digest block/sector table are not needed for homebrew
