@@ -101,6 +101,15 @@ int main(void)
 	ramtest = (int *) 0xF000000;	
 	*ramtest = 99999;
 	dbg_printf( "ram test 64MB : %d\n", *ramtest );
+	
+	ramtest = (int *) 0x8000000;	
+	*ramtest = 99999;
+	dbg_printf( "ram test 128MB #1 : %d\n", *ramtest );
+
+	
+	ramtest = (int *) 0xA000000;	
+	*ramtest = 99999;
+	dbg_printf( "ram test 128MB #2 : %d\n", *ramtest );
 
     wait_press_b();
     // init fat
