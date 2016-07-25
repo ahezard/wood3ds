@@ -143,7 +143,7 @@ debug_mode:
 dsi_mode:
 	ldr	r1,=( PAGE_8M  | 0x03000000 | 1)	
 	ldr	r3,=( PAGE_16M | 0x02000000 | 1)	
-	ldr	r2,=( PAGE_16M | 0x0C000000 | 1)	
+	ldr	r2,=( PAGE_32M | 0x0C000000 | 1)	
 	mov	r8,#0x03000000
 	adr	r9,dsimasks
 

@@ -89,3 +89,4 @@ akmenu4/arm9/data/rpg/akloader_arm9.bin
 *.nds
 *.txt
 *.d
+*.arm7
