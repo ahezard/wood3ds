@@ -91,8 +91,18 @@ int main(void)
     gdi().switchSubEngineMode();
 #endif//DEBUG
     dbg_printf( "gdi ok\n" );
+	
+	dbg_printf( "test ram\n" );
+	
+	int * ramtest = (int *) 0xD000000;	
+	*ramtest = 99999;
+	dbg_printf( "ram test 32MB : %d\n", *ramtest );
+	
+	ramtest = (int *) 0xF000000;	
+	*ramtest = 99999;
+	dbg_printf( "ram test 64MB : %d\n", *ramtest );
 
-    //wait_press_b();
+    wait_press_b();
     // init fat
     //bool succ = fatInitDefault();
     int succ = ELM_Mount();
