@@ -37,8 +37,8 @@
 @---------------------------------------------------------------------------------
 	.arch	armv5te
 	.cpu	arm946e-s
+
 	.text
-	.align	2
 	.arm
 
 	.global	__libnds_mpu_setup
@@ -115,13 +115,42 @@ __libnds_mpu_setup:
 	orr	r0,r0,#(PAGE_32K | 1)
 	mcr	p15, 0, r0, c6, c4, 0
 
+	ldr	r0,=0x4004008
+	ldr	r0,[r0]
+	ands	r0,r0,#0x8000
+	bne	dsi_mode
+	
+	swi	0xf0000
+
 	ldr	r1,=( PAGE_128M | 0x08000000 | 1)	
+	cmp	r0,#0
+	bne	debug_mode
+
 	ldr	r3,=( PAGE_4M | 0x02000000 | 1)	
 	ldr	r2,=( PAGE_16M | 0x02000000 | 1)	
 	mov	r8,#0x02400000
 
+	adr	r9,dsmasks
+	b	setregions
+
+debug_mode:
+	ldr	r3,=( PAGE_8M | 0x02000000 | 1)	
+	ldr	r2,=( PAGE_8M | 0x02800000 | 1)	
+	mov	r8,#0x02800000
+	adr	r9,debugmasks
+	b	setregions
+
+dsi_mode:
+	ldr	r1,=( PAGE_8M  | 0x03000000 | 1)	
+	ldr	r3,=( PAGE_16M | 0x02000000 | 1)	
+	ldr	r2,=( PAGE_16M | 0x0C000000 | 1)	
+	mov	r8,#0x03000000
+	adr	r9,dsimasks
+
+setregions:
+
 	@-------------------------------------------------------------------------
-	@ Region 5 - DS Accessory (GBA Cart)
+	@ Region 5 - DS Accessory (GBA Cart) / DSi switchable iwram
 	@-------------------------------------------------------------------------
 	mcr	p15, 0, r1, c6, c5, 0
 
@@ -168,4 +197,35 @@ __libnds_mpu_setup:
 	orr	r0,r0,r1
 	mcr	p15, 0, r0, c1, c0, 0
 
+	ldr	r0,=masks
+	str	r9,[r0]
+
 	bx	lr
+
+dsmasks:
+	.word	0x003fffff, 0x02000000, 0x02c00000
+debugmasks:
+	.word	0x007fffff, 0x02000000, 0x02800000
+dsimasks:
+	.word	0x00ffffff, 0x02000000, 0x0c000000
+
+masks:	.word	dsmasks
+
+	.global memCached, memUncached
+
+memCached:
+	ldr	r1,masks
+	ldr	r2,[r1],#4
+	and	r0,r0,r2
+	ldr	r2,[r1]
+	orr	r0,r0,r2
+	bx	lr
+
+memUncached:
+	ldr	r1,masks
+	ldr	r2,[r1],#8
+	and	r0,r0,r2
+	ldr	r2,[r1]
+	orr	r0,r0,r2
+	bx	lr
+	
