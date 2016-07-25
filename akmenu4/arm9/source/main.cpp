@@ -65,6 +65,80 @@ void __libnds_exit(int rc) {}
 }
 #endif
 
+/*
+ * Set the data bus width.
+ */
+typedef unsigned long datum;
+
+/**********************************************************************
+ *
+ * Function:    memTestDevice()
+ *
+ * Description: Test the integrity of a physical memory device by
+ *              performing an increment/decrement test over the
+ *              entire region.  In the process every storage bit 
+ *              in the device is tested as a zero and a one.  The
+ *              base address and the size of the region are
+ *              selected by the caller.
+ *
+ * Notes:       
+ *
+ * Returns:     NULL if the test succeeds.
+ *
+ *              A non-zero result is the first address at which an
+ *              incorrect value was read back.  By examining the
+ *              contents of memory, it may be possible to gather
+ *              additional information about the problem.
+ *
+ **********************************************************************/
+datum * 
+memTestDevice(volatile datum * baseAddress, unsigned long nBytes)	
+{
+    unsigned long offset;
+    unsigned long nWords = nBytes / sizeof(datum);
+
+    datum pattern;
+    datum antipattern;
+
+
+    /*
+     * Fill memory with a known pattern.
+     */
+    for (pattern = 1, offset = 0; offset < nWords; pattern++, offset++)
+    {
+        baseAddress[offset] = pattern;
+    }
+
+    /*
+     * Check each location and invert it for the second pass.
+     */
+    for (pattern = 1, offset = 0; offset < nWords; pattern++, offset++)
+    {
+        if (baseAddress[offset] != pattern)
+        {
+            return ((datum *) &baseAddress[offset]);
+        }
+
+        antipattern = ~pattern;
+        baseAddress[offset] = antipattern;
+    }
+
+    /*
+     * Check each location for the inverted pattern and zero it.
+     */
+    for (pattern = 1, offset = 0; offset < nWords; pattern++, offset++)
+    {
+        antipattern = ~pattern;
+        if (baseAddress[offset] != antipattern)
+        {
+            return ((datum *) &baseAddress[offset]);
+        }
+    }
+
+    return (NULL);
+
+}   /* memTestDevice() */
+
 int main(void)
 {
 	nocashMessage("ARM9 main.cpp main");
@@ -110,6 +184,21 @@ int main(void)
 	ramtest = (int *) 0xA000000;	
 	*ramtest = 99999;
 	dbg_printf( "ram test 128MB #2 : %d\n", *ramtest );
+	
+	wait_press_b();
+	
+	//if(memTestDevice((volatile datum *)0x8000000, 128*1024*1024)==NULL) {
+	//	dbg_printf( "ram test 128MB #3 : success\n");
+	//} else {
+	//	dbg_printf( "ram test 128MB #3 : failed\n");
+	//}
+	
+	// test sd access from arm9
+	unsigned int * sdio= (unsigned int*)0x10006000 ;
+	if(*sdio>0)
+		dbg_printf ("Value found, SDIo access confirmed!! : %x\n",*sdio);
+	else
+		dbg_printf ("No Value found, No SDIo access!! : %x\n",*sdio);
 
     wait_press_b();
     // init fat

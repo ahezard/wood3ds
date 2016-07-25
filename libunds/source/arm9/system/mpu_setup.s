@@ -140,10 +140,10 @@ debug_mode:
 	adr	r9,debugmasks
 	b	setregions
 
-dsi_mode:
-	ldr	r1,=( PAGE_8M  | 0x03000000 | 1)	
-	ldr	r3,=( PAGE_16M | 0x02000000 | 1)	
-	ldr	r2,=( PAGE_128M | 0x08000000 | 1)	
+dsi_mode: @pumped up 3ds dsi mode
+	ldr	r1,=( PAGE_64M  | 0x10000000 | 1) @	3DS IO port (sd card / nand access from ARM9)	
+	ldr	r3,=( PAGE_16M | 0x02000000 | 1)  @ Normal 16MB DS/DSI RAM (for compatibility)	
+	ldr	r2,=( PAGE_128M | 0x08000000 | 1) @	128 MB 3DS RAM
 	mov	r8,#0x03000000
 	adr	r9,dsimasks
 
