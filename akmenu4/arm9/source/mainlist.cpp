@@ -148,7 +148,6 @@ bool cMainList::enterDir( const std::string & dirName )
             if( 0 == i ) {
                 a_row.push_back( LANG("mainlist","flash memory") );
                 a_row.push_back( "" );
-                a_row.push_back( "sd:/" );
                 rominfo.setBanner("nand",nand_banner_bin);
             }
             else
@@ -162,7 +161,7 @@ bool cMainList::enterDir( const std::string & dirName )
                 a_row.push_back( LANG("mainlist","3ds sd card") );
                 a_row.push_back( "" );
                 a_row.push_back( "sd:/" );
-                rominfo.setBanner("slot2",nand_banner_bin);
+                rominfo.setBanner("sd",nand_banner_bin);
             } else if( _topFavorites == i ) {
                 a_row.push_back( LANG("mainlist","favorites") );
                 a_row.push_back( "" );
@@ -379,7 +378,7 @@ void cMainList::backParentDir()
         return;
 
     bool fat1=(SD_ROOT==_currentDir),favorites=("favorites:/"==_currentDir);
-    if( "sd:/" == _currentDir || fat1 || favorites || "/" == _currentDir ) {
+    if( "fat0:/" == _currentDir || fat1 || favorites || "/" == _currentDir || "sd:/" == _currentDir || "fat:/" == _currentDir) {
         enterDir( "..." );
         if(fat1) selectRow(_topuSD);
         if(favorites) selectRow(_topFavorites);

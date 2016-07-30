@@ -204,8 +204,9 @@ int main(void)
     wait_press_b();
     // init fat
     bool succ = fatInitDefault();
-    //int succ = ELM_Mount();
+    int succ2 = ELM_Mount();
     dbg_printf( "init fat %d\n", succ );
+	dbg_printf( "init elm %d\n", succ2 );
 
     wait_press_b();
 

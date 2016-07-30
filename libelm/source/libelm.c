@@ -675,10 +675,10 @@ int ELM_Mount(void)
   {
     ret|=2;
   }
-  if(f_mount(ELM_DSISD,&(_elm[2]))!=FR_OK)
-  {
-    ret|=4;
-  }
+  //if(f_mount(ELM_DSISD,&(_elm[2]))!=FR_OK)
+  //{
+  //  ret|=4;
+  //}
   if(ret==7)
   {
     return ret;
@@ -693,13 +693,13 @@ int ELM_Mount(void)
     _ELM_chk_mounted(1);
     AddDevice(&dotab_elm1);
   }
-  if(!(ret&4))
-  {
-  	nocashMessage("libelm.c _ELM_chk_mounted(2);\n");
-    _ELM_chk_mounted(2);
-	nocashMessage("libelm.c AddDevice(&dotab_elm2);\n");
-    AddDevice(&dotab_elm2);
-  }
+  //if(!(ret&4))
+  //{
+  //	nocashMessage("libelm.c _ELM_chk_mounted(2);\n");
+  //  _ELM_chk_mounted(2);
+  //	nocashMessage("libelm.c AddDevice(&dotab_elm2);\n");
+  //  AddDevice(&dotab_elm2);
+  //}
   elm_error=0;
   return ret;
 }

@@ -33,6 +33,7 @@
 #include "datetime.h"
 #include "dsrom.h"
 #include "favorites.h"
+#include <sys/statvfs.h>
 
 #define USE_OPEN
 #ifdef USE_OPEN
@@ -120,16 +121,29 @@ bool copyFile( const std::string & srcFilename, const std::string & destFilename
     u64 freeSpace = 0;
 
     std::string destDiskName = destFilename.substr( 0, 6 );
-    if( destDiskName != "sd:/" && destDiskName != "fat1:/" )
-        return false;
+    if( destDiskName != "fat0:/" && destDiskName != "fat1:/") {
+		destDiskName = destFilename.substr( 0, 5 );
+		if( destDiskName != "fat:/") {
+			destDiskName = destFilename.substr( 0, 4 );
+			if( destDiskName != "sd:/") {
+				return false;
+			}
+		}
+	}
 
     if( !getDiskSpaceInfo( destDiskName, total, used, freeSpace ) ) {
         messageBox( NULL, LANG("no free space","title"), LANG("no free space","text"), MB_OK );
         return false;
     }
+	
+	dbg_printf("copyLength", copyLength );
 
     if( 0 == copyLength || copyLength > (size_t)srcSt.st_size )
         copyLength = srcSt.st_size;
+		
+	dbg_printf("copyLength %X", copyLength );
+		
+	dbg_printf("freeSpace %X", freeSpace );
 
     if( freeSpace < copyLength ) {
         messageBox( NULL, LANG("no free space","title"), LANG("no free space","text"), MB_OK );
@@ -494,23 +508,13 @@ static bool getDiskFreeSpace(u32 disk,u64& freeSpace)
 bool getDiskSpaceInfo(const std::string& diskName,u64& total,u64& used,u64& freeSpace)
 {
   if(""==diskName) return false;
-  u32 disk;
-  if(!getDiskFromString(diskName,disk))
-  {
-    cwl();
-    return false;
-  }
-  if(!getDiskTotalSpace(disk,total))
-  {
-    cwl();
-    return false;
-  }
-  if(!getDiskFreeSpace(disk,freeSpace))
-  {
-    cwl();
-    return false;
-  }
-  cwl();
+  
+  struct statvfs info;
+  
+  if( statvfs(diskName.c_str(), &info) != 0) return false;
+    
+  total = info.f_frsize*info.f_blocks;
+  freeSpace = info.f_frsize*info.f_bfree;
   used=total-freeSpace;
   return true;
 }
