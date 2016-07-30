@@ -338,7 +338,7 @@ bool cSaveManager::backupSaveData()
 
     std::string loadLoadedFile;
     if( !loadLastInfo( loadLoadedFile ) ) {
-        loadLoadedFile = "fat0:/unknown_savedata_" + datetime().getTimeStampString() + ".nds";
+        loadLoadedFile = "sd:/unknown_savedata_" + datetime().getTimeStampString() + ".nds";
     }
 
     // update custom savlist if needed
@@ -360,7 +360,7 @@ bool cSaveManager::backupSaveData()
     if( NULL == f ) {
         if( (0 == memcmp( "fat1:/", loadLoadedFile.c_str(), 6 ) ) ) { // no sd card, backup to nand flash, and warn user
             size_t lastSlashPos = loadLoadedFile.find_last_of( '/' );
-            loadLoadedFile.replace( 0, lastSlashPos + 1, "fat0:/" );
+            loadLoadedFile.replace( 0, lastSlashPos + 1, "sd:/" );
             loadLoadedFile.insert( loadLoadedFile.size() - 4, "." + datetime().getTimeStampString() );
             f = fopen( loadLoadedFile.c_str(), "wb" );
             if( NULL == f )

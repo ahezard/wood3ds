@@ -96,7 +96,7 @@ void cMainWnd::init()
     _mainList->selectedRowHeadClicked.connect( this, &cMainWnd::onMainListSelItemHeadClicked );
     _mainList->directoryChanged.connect( this, &cMainWnd::onFolderChanged );
     _mainList->animateIcons.connect( this, &cMainWnd::onAnimation );
-    //_mainList->enterDir( "fat0:/" );
+    //_mainList->enterDir( "sd:/" );
     addChildWindow( _mainList );
     dbg_printf( "mainlist %08x\n", _mainList );
 
@@ -392,11 +392,11 @@ bool cMainWnd::processKeyMessage( const cKeyMessage & msg )
 #if defined(_STORAGE_rpg)
               const std::string dir =  _mainList->getCurrentDir();
               if( dir.length() < 5 ) {
-                  _mainList->enterDir( "fat0:/" );
-              } else if( dir.substr( 0, 5 ) == "fat0:" ) {
+                  _mainList->enterDir( "sd:/" );
+              } else if( dir.substr( 0, 5 ) == "sd:" ) {
                   _mainList->enterDir( "fat1:/" );
               } else {
-                  _mainList->enterDir( "fat0:/" );
+                  _mainList->enterDir( "sd:/" );
               }
 #elif defined(_STORAGE_r4) || defined(_STORAGE_ak2i) || defined(_STORAGE_r4idsn)
               _mainList->enterDir( "favorites:/" );
@@ -759,13 +759,13 @@ void cMainWnd::setParam(void)
           gs().langDirectory = langNames[langIndexAfter];
           gs().saveSettings();
 #if defined(_STORAGE_rpg)
-          loadRom( "fat0:/akmenu4.nds", 0, 0, 0 );
+          loadRom( "sd:/akmenu4.nds", 0, 0, 0 );
 #elif defined(_STORAGE_r4)
-          loadRom( "fat0:/_ds_menu.dat", "", 0, 0, 0 );
+          loadRom( "sd:/_ds_menu.dat", "", 0, 0, 0 );
 #elif defined(_STORAGE_ak2i)
-          loadRom( "fat0:/akmenu4.nds", "", 0, 0, 0 );
+          loadRom( "sd:/akmenu4.nds", "", 0, 0, 0 );
 #elif defined(_STORAGE_r4idsn)
-          loadRom( "fat0:/_dsmenu.dat", "", 0, 0, 0 );
+          loadRom( "sd:/_dsmenu.dat", "", 0, 0, 0 );
 #endif
 
       }
@@ -782,13 +782,13 @@ void cMainWnd::setParam(void)
           gs().langDirectory = langNames[langIndexAfter];
           gs().saveSettings();
 #if defined(_STORAGE_rpg)
-          loadRom( "fat0:/akmenu4.nds", 0, 0, 0 );
+          loadRom( "sd:/akmenu4.nds", 0, 0, 0 );
 #elif defined(_STORAGE_r4)
-          loadRom( "fat0:/_ds_menu.dat", "", 0, 0, 0 );
+          loadRom( "sd:/_ds_menu.dat", "", 0, 0, 0 );
 #elif defined(_STORAGE_ak2i)
-          loadRom( "fat0:/akmenu4.nds", "", 0, 0, 0 );
+          loadRom( "sd:/akmenu4.nds", "", 0, 0, 0 );
 #elif defined(_STORAGE_r4idsn)
-          loadRom( "fat0:/_dsmenu.dat", "", 0, 0, 0 );
+          loadRom( "sd:/_dsmenu.dat", "", 0, 0, 0 );
 #endif
       }
   }
@@ -841,7 +841,7 @@ void cMainWnd::onFolderChanged()
     resetInputIdle();
     std::string dirShowName = _mainList->getCurrentDir();
 #if defined(_STORAGE_rpg)
-    if( dirShowName.substr( 0, 5 ) == "fat0:" )
+    if( dirShowName.substr( 0, 5 ) == "sd:" )
         dirShowName.replace( 0, 4, "Flash" );
     else
 #endif

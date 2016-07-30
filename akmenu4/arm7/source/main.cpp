@@ -7,7 +7,7 @@
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
-
+ 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -33,7 +33,7 @@ void __libnds_exit(int rc) {}
 void VblankHandler(void)
 {
   inputGetAndSend();
-}
+} 
 
 #define PM_NDSLITE_ADR (4)
 #define PM_CONTROL2_REG (16)
@@ -89,7 +89,7 @@ static void brightnessNext(void)
   data|=PM_NDSLITE_BRIGHTNESS(level);
   writePowerManagement(PM_NDSLITE_ADR,data);
 }
-
+ 
 static void brightnessSet(u8 level)
 {
   u8 data=readPowerManagement(PM_NDSLITE_ADR);
@@ -98,7 +98,7 @@ static void brightnessSet(u8 level)
   data&=~PM_NDSLITE_BRIGHTNESS_MASK;
   data|=PM_NDSLITE_BRIGHTNESS(level);
   writePowerManagement(PM_NDSLITE_ADR,data);
-}
+} 
 static u8 brightnessGet(void)
 {
   u8 data=readPowerManagement(PM_NDSLITE_ADR);
@@ -107,8 +107,13 @@ static u8 brightnessGet(void)
   return data&PM_NDSLITE_BRIGHTNESS_MASK;
 }
 
+extern void swiSoftReset_alt();
+
 static void menuValue32Handler(u32 value,void* data)
 {
+
+nocashMessage("handler");
+
   switch(value)
   {
     case MENU_MSG_GBA:
@@ -152,7 +157,11 @@ static void menuValue32Handler(u32 value,void* data)
 
 int main()
 {
-  nocashMessage("ARM7 main.cpp main");
+	//prepairReset();
+	//nocashMessage("reset!");
+	//swiSoftReset();
+
+  nocashMessage("ARM7 main.cpp main"); 
   //mute sound
   if(2==getSystem()) writePowerManagement(PM_CONTROL_REG,(readPowerManagement(PM_CONTROL_REG)&~PM_SOUND_AMP)|PM_SOUND_MUTE);
   //switch on backlight on both screens
@@ -171,7 +180,7 @@ int main()
 
   installSystemFIFO();
 
-  irqSet(IRQ_VBLANK,VblankHandler);
+  irqSet(IRQ_VBLANK,VblankHandler); 
 
   irqEnable(IRQ_VBLANK|IRQ_NETWORK);
 

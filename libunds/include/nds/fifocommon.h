@@ -43,8 +43,10 @@ typedef enum {
 	SDMMC_SD_STOP = (4<<16),
 	SDMMC_NAND_START = (5<<16),
 	SDMMC_NAND_STOP= (6<<16),
-	SDMMC_MSG = (7<<16)
-} FifoSdmmcCommands;
+	SDMMC_MSG = (7<<16),
+	SYS_SD_READ_SECTORS = (1),
+	SYS_SD_WRITE_SECTORS = (2)
+} FifoSdmmcCommands; 
 
 //! Power Management LED blink mode control bits.
 typedef enum {

@@ -214,7 +214,7 @@ void cExpWnd::onRAM()
 
 void cExpWnd::onSRAM()
 {
-    std::string saveName="fat0:/sram-"+datetime().getTimeStampString()+".sav";
+    std::string saveName="sd:/sram-"+datetime().getTimeStampString()+".sav";
     const u32 size=4096*128,page=4096,pages=128;
     NandFast();
     FILE* saveFile=fopen(saveName.c_str(),"wb");

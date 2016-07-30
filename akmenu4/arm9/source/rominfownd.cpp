@@ -258,7 +258,7 @@ void cRomInfoWnd::setFileInfo( const std::string & fullName, const std::string &
         return;
     }
 
-    if( "fat0:/" == fullName || "fat1:/" == fullName ) {
+    if( "sd:/" == fullName || "fat1:/" == fullName ) {
         setDiskInfo();
         return;
     }

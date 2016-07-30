@@ -32,7 +32,7 @@
 #if defined(_STORAGE_rpg)
 #define SD_ROOT_0 "fat1:"
 #else
-#define SD_ROOT_0 "fat0:"
+#define SD_ROOT_0 "sd:"
 #endif
 #define SD_ROOT SD_ROOT_0"/"
 

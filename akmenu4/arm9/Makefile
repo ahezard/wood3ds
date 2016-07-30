@@ -43,13 +43,13 @@ LDFLAGS	=	-specs=../../specs/ds_arm9.specs -g $(ARCH) -mno-fpu -Wl,-Map,$(notdir
 #---------------------------------------------------------------------------------
 # any extra libraries we wish to link with the project
 #---------------------------------------------------------------------------------
-LIBS	:=	-lelm -lio$(STORAGE) -lunds9
+LIBS	:=	-lfat -lelm -lio$(STORAGE) -lunds9
 
 #---------------------------------------------------------------------------------
 # list of directories containing libraries, this must be the top level containing
 # include and lib
 #---------------------------------------------------------------------------------
-LIBDIRS	:=	$(LIBELM) $(LIBUNDS)
+LIBDIRS	:=	$(LIBELM) $(LIBUNDS) $(LIBNDS)
 ifeq ($(STORAGE),rpg)
 LIBDIRS	+=	$(LIBIORPG)
 endif

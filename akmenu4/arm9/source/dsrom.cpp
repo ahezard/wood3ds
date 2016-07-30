@@ -63,7 +63,7 @@ bool DSRomInfo::loadDSRomInfo( const std::string & filename, bool loadBanner )
     }
 
     ///////// ROM Header /////////
-    u16 crc = swiCRC16( 0xFFFF, &header, 0x15E );
+    u16 crc = header.headerCRC16;
     if( crc != header.headerCRC16 ) // 文件头 CRC 错误，不是nds游戏
     {
         dbg_printf( "%s rom header crc error\n", filename.c_str() );
@@ -95,7 +95,7 @@ bool DSRomInfo::loadDSRomInfo( const std::string & filename, bool loadBanner )
         if( sizeof(tNDSBanner) != readed ) {
             memcpy( &_banner, nds_banner_bin, sizeof(_banner) );
         } else {
-            crc = swiCRC16( 0xffff, banner.icon, 0x840 - 32 );
+            crc = banner.crc;
 
             if( crc != banner.crc ) {
                 dbg_printf("banner crc error, %04x/%04x\n", banner.crc, crc );

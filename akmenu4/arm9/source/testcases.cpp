@@ -38,7 +38,7 @@
 void testIni()
 {
     CIniFile ini;
-    ini.LoadIniFile( "fat0:/moonshl/moonshl.ini" );
+    ini.LoadIniFile( "sd:/moonshl/moonshl.ini" );
     int bright = ini.GetInt( "System", "NDSLiteDefaultBrightness", 0 );
     int WhenStandby= ini.GetInt( "BacklightTimeout", "WhenStandby", 0 );
     int WhenPicture = ini.GetInt( "BacklightTimeout", "WhenPicture", 0 );
@@ -109,12 +109,12 @@ void testCopy()
     static ALIGN(4) u8 copyBuffer[CONTINUOUS_COPY_SIZE];
 
     struct stat srcSt;
-    if( 0 != stat( "fat0:/1Mdummy.nds", &srcSt ) ) {
+    if( 0 != stat( "sd:/1Mdummy.nds", &srcSt ) ) {
         printf( "copy file error\n" );
         return;
     }
-    FILE * rf = fopen( "fat0:/1Mdummy.nds", "rb" );
-    FILE * wf = fopen( "fat0:/__rpg/1Mdummy.nds", "wb" );
+    FILE * rf = fopen( "sd:/1Mdummy.nds", "rb" );
+    FILE * wf = fopen( "sd:/__rpg/1Mdummy.nds", "wb" );
 
     u32 writeCount = srcSt.st_size / CONTINUOUS_COPY_SIZE;
     if( srcSt.st_size & (CONTINUOUS_COPY_SIZE - 1) )
@@ -153,7 +153,7 @@ void testWrite()
 #endif
     static ALIGN(4) u8 copyBuffer[CONTINUOUS_COPY_SIZE];
 
-    FILE * wf = fopen( "fat0:/__rpg/1mdummy2.bin", "wb" );
+    FILE * wf = fopen( "sd:/__rpg/1mdummy2.bin", "wb" );
 
     u32 writeCount = 1024 * 1024 / CONTINUOUS_COPY_SIZE;
 
@@ -184,8 +184,8 @@ void testWrite()
 
 void testWriteFile()
 {
-    FILE * f = fopen( "fat0:/testWriteSpeed.bin", "wb" );
-    //FILE * f = fopen( "fat0:/test_nand4.nds", "wb" );
+    FILE * f = fopen( "sd:/testWriteSpeed.bin", "wb" );
+    //FILE * f = fopen( "sd:/test_nand4.nds", "wb" );
     if( NULL == f )
         return;
 #define SAVEDATA_BUFFER_SIZE (1024 * 1024)
@@ -209,11 +209,11 @@ void testWriteFile()
 void testViolenceCopy()
 {
     while( true ) {
-        unlink( "fat0:/800mdummy.rar" );
-        if( !copyFile( "fat1:/800mdummy.rar", "fat0:/800mdummy.rar", false ) )
+        unlink( "sd:/800mdummy.rar" );
+        if( !copyFile( "fat1:/800mdummy.rar", "sd:/800mdummy.rar", false ) )
             return;
 
-        FILE * f = fopen("fat0:/800mdummy.rar", "rb");
+        FILE * f = fopen("sd:/800mdummy.rar", "rb");
         u32 readed = 0;
         //PrintFreeMem();
         u8 * buffer = new u8[1048576];
@@ -560,7 +560,7 @@ void testEEPReadStatus()
 void testGetDiskFreeSpace()
 {
     u64 dirSize = 0;
-    if( getDirSize( "fat0:/", true, &dirSize ) ) {
+    if( getDirSize( "sd:/", true, &dirSize ) ) {
         dbg_printf("fat0 file takes %d bytes\n", dirSize );
     }
 }

@@ -34,6 +34,8 @@
 #include <iorpg.h>
 #endif
 
+void swiSoftReset_alt(void);
+
 static void resetAndLoop()
 {
     // Interrupt
@@ -52,6 +54,8 @@ static void resetAndLoop()
       if(FIFO_PACK_VALUE32(FIFO_USER_01,MENU_MSG_ARM7_READY_BOOT)==res) break;
     }
 
+	printf("resetting! %x %x",__NDSHeader->arm9executeAddress,__NDSHeader->arm7executeAddress);
+	
     swiSoftReset();
 }
 

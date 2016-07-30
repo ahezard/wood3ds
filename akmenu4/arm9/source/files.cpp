@@ -120,7 +120,7 @@ bool copyFile( const std::string & srcFilename, const std::string & destFilename
     u64 freeSpace = 0;
 
     std::string destDiskName = destFilename.substr( 0, 6 );
-    if( destDiskName != "fat0:/" && destDiskName != "fat1:/" )
+    if( destDiskName != "sd:/" && destDiskName != "fat1:/" )
         return false;
 
     if( !getDiskSpaceInfo( destDiskName, total, used, freeSpace ) ) {

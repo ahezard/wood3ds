@@ -25,6 +25,7 @@
 ---------------------------------------------------------------------------------*/
 #include <nds/system.h>
 #include <nds/fifocommon.h>
+#include <nds/fifomessages.h>
 #include <nds/ndstypes.h>
 #include <nds/interrupts.h>
 #include <nds/bios.h>
@@ -93,8 +94,92 @@ void powerValueHandler(u32 value, void* user_data) {
 	}
 }
 
-extern void sdmmcValueHandler(u32 value, void* user_data);
-extern void sdmmcMsgHandler(u32 value, void* user_data);
+//extern void sdmmcValueHandler(u32 value, void* user_data);
+//extern void sdmmcMsgHandler(u32 value, void* user_data);
+
+int msg_count = 0;
+static FifoMessage msg;
+
+//---------------------------------------------------------------------------------
+void sdmmcMsgHandler(u32 value, void* user_data) {
+//---------------------------------------------------------------------------------
+	switch(msg_count) {
+		case 0:
+			msg.type = value;
+			msg_count++;
+			fifoSendValue32(FIFO_SDMMC, SDMMC_MSG);
+			break;
+		case 1:
+			msg.sdParams.startsector = value;
+			msg_count++;
+			fifoSendValue32(FIFO_SDMMC, SDMMC_MSG);
+			break;
+		case 2:
+			msg.sdParams.numsectors = value;
+			msg_count++;
+			fifoSendValue32(FIFO_SDMMC, SDMMC_MSG);
+			break;
+		case 3:
+			msg.sdParams.buffer = value;
+			msg_count++;
+			
+			int retval = 0;
+			
+			int oldIME = enterCriticalSection();
+			switch (msg.type) {
+				case SYS_SD_READ_SECTORS:
+					/* retval =  */sdmmc_sdcard_readsectors(msg.sdParams.startsector, msg.sdParams.numsectors, msg.sdParams.buffer);
+					break;
+				case SYS_SD_WRITE_SECTORS:
+					//retval = sdmmc_writesectors(msg.sdParams.startsector, msg.sdParams.numsectors, msg.sdParams.buffer);
+					break;
+			}
+
+			leaveCriticalSection(oldIME);
+			fifoSendValue32(FIFO_SDMMC, 0);
+			break;
+	}
+}
+
+//---------------------------------------------------------------------------------
+void sdmmcValueHandler(u32 value, void* user_data) {
+//---------------------------------------------------------------------------------
+    int result = 0;
+
+    int oldIME = enterCriticalSection();
+
+	switch(value) {
+
+	case SDMMC_HAVE_SD:
+		result = sdmmc_read16(REG_SDSTATUS0);
+		break;
+
+	case SDMMC_SD_START:
+		if (sdmmc_read16(REG_SDSTATUS0) == 0) {
+			result = 1;
+		} else {
+			sdmmc_controller_init();
+			result = sdmmc_sdcard_init();
+		}
+		break;
+
+	case SDMMC_SD_IS_INSERTED:
+		result = sdmmc_cardinserted();
+		break;
+
+	case SDMMC_SD_STOP:
+		break;		
+		
+	case SDMMC_MSG:
+	    msg_count = 0;
+		break;		
+	}
+	
+
+    leaveCriticalSection(oldIME);
+
+    fifoSendValue32(FIFO_SDMMC, result);
+}
 
 //---------------------------------------------------------------------------------
 void installSystemFIFO(void) {

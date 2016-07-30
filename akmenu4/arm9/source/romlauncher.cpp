@@ -190,7 +190,7 @@ TLaunchResult launchRom(const std::string& aFullPath,DSRomInfo& aRomInfo,bool aM
     bool dma=false,protection=aRomInfo.saveInfo().isProtection(); u32 speed=0;
     int mount=0;
 #if defined(_STORAGE_rpg)
-    if(disk=="fat0:"||disk=="FAT0:") // if we are using internal NAND flash, use fast reading setting
+    if(disk=="sd:"||disk=="sd:") // if we are using internal NAND flash, use fast reading setting
     {
       speed=0xd0;
       if(OnlySDGame(gameCode))

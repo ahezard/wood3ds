@@ -26,6 +26,7 @@
 #include <list>
 
 #include <elm.h>
+#include <fat.h>
 
 #include "dbgtool.h"
 #include "gdi.h"
@@ -202,8 +203,8 @@ int main(void)
 
     wait_press_b();
     // init fat
-    //bool succ = fatInitDefault();
-    int succ = ELM_Mount();
+    bool succ = fatInitDefault();
+    //int succ = ELM_Mount();
     dbg_printf( "init fat %d\n", succ );
 
     wait_press_b();
