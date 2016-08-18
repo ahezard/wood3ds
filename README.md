@@ -25,4 +25,5 @@ The following additionals binaries are needed :
 r4denc, you can found it into the latest devKitArm r45 under bin/
 bdftopcf, install it via cygwin
 
+Many thanks to shutterbug2000 for most of the fixs (and bugs)
  
