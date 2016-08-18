@@ -184,7 +184,16 @@ void sdmmcValueHandler(u32 value, void* user_data) {
 //---------------------------------------------------------------------------------
 void installSystemFIFO(void) {
 //---------------------------------------------------------------------------------
-    
+    unsigned int * SCFG_CLK=	(unsigned int*)0x4004004;
+    unsigned int * SCFG_EXT=	(unsigned int*)0x4004008;
+		
+	//*SCFG_EXT = 0x93FFFB06;
+	//*SCFG_EXT = 0x93FFFF07; // TWL value
+	//*SCFG_CLK = 0x0187; // TWL value
+	*SCFG_EXT |= 0x830F0100; // NAND ACCESS
+	*SCFG_CLK |= 1; // NAND ACCESS
+	
+	
 	fifoSetValue32Handler(FIFO_PM, powerValueHandler, 0);
 	fifoSetValue32Handler(FIFO_SDMMC, sdmmcValueHandler, 0);
 	fifoSetValue32Handler(FIFO_SDMSG, sdmmcMsgHandler, 0);	

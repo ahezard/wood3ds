@@ -166,42 +166,18 @@ int main(void)
     gdi().switchSubEngineMode();
 #endif//DEBUG
     dbg_printf( "gdi ok\n" );
+	unsigned int * SCFG_ROM=	(unsigned int*)0x4004000;
+	unsigned int * SCFG_CLK=	(unsigned int*)0x4004004; 
+	unsigned int * SCFG_EXT=	(unsigned int*)0x4004008;
 	
-	dbg_printf( "test ram\n" );
+	dbg_printf( "SCFG_ROM %x\n", *SCFG_ROM ); // DS MODE 80	
+	dbg_printf( "SCFG_CLK %x\n", *SCFG_CLK ); // DS MODE 80
+	dbg_printf( "SCFG_EXT %x\n", *SCFG_EXT ); // DS MODE 8307F19F
 	
-	int * ramtest = (int *) 0xD000000;	
-	*ramtest = 99999;
-	dbg_printf( "ram test 32MB : %d\n", *ramtest );
+	//*SCFG_CLK=	*SCFG_CLK | 1;
 	
-	ramtest = (int *) 0xF000000;	
-	*ramtest = 99999;
-	dbg_printf( "ram test 64MB : %d\n", *ramtest );
+	//dbg_printf( "SCFG_CLK %x\n", *SCFG_CLK ); // DS MODE 80
 	
-	ramtest = (int *) 0x8000000;	
-	*ramtest = 99999;
-	dbg_printf( "ram test 128MB #1 : %d\n", *ramtest );
-
-	
-	ramtest = (int *) 0xA000000;	
-	*ramtest = 99999;
-	dbg_printf( "ram test 128MB #2 : %d\n", *ramtest );
-	
-	wait_press_b();
-	
-	//if(memTestDevice((volatile datum *)0x8000000, 128*1024*1024)==NULL) {
-	//	dbg_printf( "ram test 128MB #3 : success\n");
-	//} else {
-	//	dbg_printf( "ram test 128MB #3 : failed\n");
-	//}
-	
-	// test sd access from arm9
-	unsigned int * sdio= (unsigned int*)0x10006000 ;
-	if(*sdio>0)
-		dbg_printf ("Value found, SDIo access confirmed!! : %x\n",*sdio);
-	else
-		dbg_printf ("No Value found, No SDIo access!! : %x\n",*sdio);
-
-    wait_press_b();
     // init fat
     bool succ = fatInitDefault();
     int succ2 = ELM_Mount();

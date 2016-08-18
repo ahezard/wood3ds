@@ -148,6 +148,7 @@ bool cMainList::enterDir( const std::string & dirName )
             if( 0 == i ) {
                 a_row.push_back( LANG("mainlist","flash memory") );
                 a_row.push_back( "" );
+                a_row.push_back( "fat0:/" );
                 rominfo.setBanner("nand",nand_banner_bin);
             }
             else
