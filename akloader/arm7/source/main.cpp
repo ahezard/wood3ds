@@ -147,5 +147,7 @@ int main(int argc,char** argv)
   fifoSetValue32Handler(FIFO_USER_04, resetMsgHandler, 0);
 
   // Keep the ARM7 out of main RAM
-  while(true) swiWaitForVBlank();
+  // while(true) swiWaitForVBlank();
+  while(1) { swiWaitForVBlank(); }
 }
+

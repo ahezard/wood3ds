@@ -144,6 +144,13 @@ int main(void)
 {
 	nocashMessage("ARM9 main.cpp main");
 	
+	volatile u32* SCFG_ROM = (volatile u32*)0x4004000;
+	volatile u32* SCFG_CLK = (volatile u32*)0x4004004;
+	volatile u32* SCFG_EXT = (volatile u32*)0x4004008;		
+	
+	*SCFG_CLK = 0x80;
+	*SCFG_EXT = 0x03000000;
+
     irq().init();
 
     windowManager();
@@ -163,12 +170,9 @@ int main(void)
     // init graphics
     gdi().init();
 #ifdef DEBUG
-    gdi().switchSubEngineMode();
-#endif//DEBUG
+    // gdi().switchSubEngineMode();
+#endif
     dbg_printf( "gdi ok\n" );
-	unsigned int * SCFG_ROM=	(unsigned int*)0x4004000;
-	unsigned int * SCFG_CLK=	(unsigned int*)0x4004004; 
-	unsigned int * SCFG_EXT=	(unsigned int*)0x4004008;
 	
 	dbg_printf( "SCFG_ROM %x\n", *SCFG_ROM ); // DS MODE 80	
 	dbg_printf( "SCFG_CLK %x\n", *SCFG_CLK ); // DS MODE 80
@@ -184,7 +188,8 @@ int main(void)
     dbg_printf( "init fat %d\n", succ );
 	dbg_printf( "init elm %d\n", succ2 );
 
-    wait_press_b();
+    // Debug Pause. Disabled for now
+	// wait_press_b();
 
     // setting scripts
     gs().loadSettings();
@@ -335,8 +340,8 @@ int main(void)
 
     if(*(u32*)0x04000604) fifoSendValue32(FIFO_USER_01,MENU_MSG_SHUTDOWN);
 
-    while( true )
-    {
+    // while( true ) {
+    while(1) {
       timer().updateFps();
 
       INPUT & inputs = updateInput();
@@ -349,6 +354,6 @@ int main(void)
 
       gdi().present( GE_MAIN );
     }
-
     return 0;
 }
+

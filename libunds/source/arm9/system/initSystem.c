@@ -83,15 +83,6 @@ void __attribute__((weak)) initSystem(void) {
 	__syscalls.exit = __libnds_exit;
 	irqEnable(IRQ_VBLANK);
 	
-	unsigned int * SCFG_CLK=	(unsigned int*)0x4004004;
-	unsigned int * SCFG_EXT=	(unsigned int*)0x4004008;
-		
-	//*SCFG_EXT = 0xFFFFFFFF;
-	
-	//*SCFG_EXT = 0xFFFFFFFF; broke ds game
-	//*SCFG_EXT = 0x830FE100; broke ds game
-	
-	//*SCFG_EXT = 0x830F0100; ds game ok no sd access
-	*SCFG_EXT = 0x830F0100;
-	*SCFG_CLK |= 1;
 }
+
+

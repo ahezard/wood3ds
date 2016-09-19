@@ -246,14 +246,15 @@ int main(void)
         resetInterrupts();
         resetAndLoop();
 
-    }
-    else {
+    } 
+	else {
         dbg_printf("load (%s)fail\n", filename );
 #ifdef NDS_BOOT
         showMsg( MSGID_SYS_FILE_MISSING, MSG_COLOR ); //boot nds
 #endif//NDS_BOOT
         return 1;
     }
-
+	while(1) { swiWaitForVBlank(); }
     return 0;
 }
+

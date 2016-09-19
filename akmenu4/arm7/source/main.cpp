@@ -161,28 +161,39 @@ int main()
 	//nocashMessage("reset!");
 	//swiSoftReset();
 
-  nocashMessage("ARM7 main.cpp main"); 
-  //mute sound
-  if(2==getSystem()) writePowerManagement(PM_CONTROL_REG,(readPowerManagement(PM_CONTROL_REG)&~PM_SOUND_AMP)|PM_SOUND_MUTE);
-  //switch on backlight on both screens
-  writePowerManagement(PM_CONTROL_REG,readPowerManagement(PM_CONTROL_REG)|PM_BACKLIGHT_BOTTOM|PM_BACKLIGHT_TOP);
+	nocashMessage("ARM7 main.cpp main"); 
 
-  // read User Settings from firmware
-  readUserSettings();
+  	volatile u32* SCFG_ROM = (volatile u32*)0x4004000;
+	volatile u32* SCFG_CLK = (volatile u32*)0x4004004;
+	volatile u32* SCFG_EXT = (volatile u32*)0x4004008;
+		
+	*SCFG_ROM = 0x703;
+	*SCFG_CLK = 0x0181;
+	*SCFG_EXT = 0x13A40000;
 
-  irqInit();
-  fifoInit();
+	//mute sound
+	if(2==getSystem()) writePowerManagement(PM_CONTROL_REG,(readPowerManagement(PM_CONTROL_REG)&~PM_SOUND_AMP)|PM_SOUND_MUTE);
+	//switch on backlight on both screens
+	writePowerManagement(PM_CONTROL_REG,readPowerManagement(PM_CONTROL_REG)|PM_BACKLIGHT_BOTTOM|PM_BACKLIGHT_TOP);
 
-  // Start the RTC tracking IRQ
-  initClockIRQ();
+	// read User Settings from firmware
+	readUserSettings();
 
-  fifoSetValue32Handler(FIFO_USER_01,menuValue32Handler,0);
+	irqInit();
+	fifoInit();
 
-  installSystemFIFO();
+	// Start the RTC tracking IRQ
+	initClockIRQ();
 
-  irqSet(IRQ_VBLANK,VblankHandler); 
+	fifoSetValue32Handler(FIFO_USER_01,menuValue32Handler,0);
 
-  irqEnable(IRQ_VBLANK|IRQ_NETWORK);
+	installSystemFIFO();
 
-  while(true) swiWaitForVBlank();
+	irqSet(IRQ_VBLANK,VblankHandler); 
+
+	irqEnable(IRQ_VBLANK|IRQ_NETWORK);
+
+	// while(true) swiWaitForVBlank();
+	while(1) { swiWaitForVBlank(); }
 }
+
